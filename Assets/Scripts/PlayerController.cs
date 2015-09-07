@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 
             isBasicAttacking = true;
             GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(this.transform.position.x + 1.8f, this.transform.position.y, this.transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
-            this.currentSpeed = this.currentSpeed * 0.6f;
+            this.currentSpeed = this.currentSpeed * 1.5f;
 
             loadedBasicAttack.transform.localScale = new Vector3(2f,2f,1f);
 
