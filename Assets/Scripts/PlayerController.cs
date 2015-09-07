@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
     private Animator myAnimator;
 
     private bool grounded;
+    private bool isBasicAttacking;
     public LayerMask groundLayer;
 
    
@@ -28,11 +29,22 @@ public class PlayerController : MonoBehaviour {
 
         myRigidbody.velocity = new Vector2(moveSpeed, myRigidbody.velocity.y);
        
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0)) && grounded) {
+        if (Input.GetKeyDown(KeyCode.Space) && grounded) {
             myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
         }
 
+        if (myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
+            isBasicAttacking = false;
+        }
+
+        if (Input.GetMouseButtonDown(0) && !isBasicAttacking) {
+            isBasicAttacking = true;
+        } 
+
+
+
         myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
+        myAnimator.SetBool("BasicAttacking", isBasicAttacking);
         myAnimator.SetBool("Grounded", grounded);
 	}
 
