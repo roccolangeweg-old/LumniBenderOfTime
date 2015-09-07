@@ -41,8 +41,6 @@ public class PlayerController : MonoBehaviour {
             isBasicAttacking = true;
         } 
 
-
-
         myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
         myAnimator.SetBool("BasicAttacking", isBasicAttacking);
         myAnimator.SetBool("Grounded", grounded);
