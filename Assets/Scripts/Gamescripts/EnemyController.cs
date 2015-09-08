@@ -68,7 +68,7 @@ public class EnemyController : MonoBehaviour {
                 }
             }
 
-            myAnimator.SetBool("Alive", false);
+            myAnimator.SetBool("Alive", isAlive);
             myAnimator.SetFloat("Speed", Mathf.Abs(myRigidbody.velocity.x));
             myAnimator.SetBool("Knockback", isKnockedBack);
 
