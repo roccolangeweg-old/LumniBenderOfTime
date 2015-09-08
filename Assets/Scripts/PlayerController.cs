@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour {
 
         myRigidbody.velocity = new Vector2(currentSpeed, myRigidbody.velocity.y);
        
-        if (Input.GetKeyDown(KeyCode.Space) && grounded) {
+        if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
             myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
         }
 
@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour {
 
         }
 
-        if (Input.GetMouseButtonDown(0) && !isBasicAttacking) {
+        if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
 
             isBasicAttacking = true;
             GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(this.transform.position.x + 1.8f, this.transform.position.y, this.transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
