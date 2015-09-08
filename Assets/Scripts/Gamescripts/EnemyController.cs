@@ -54,21 +54,30 @@ public class EnemyController : MonoBehaviour {
             }
 
             if (currentHealth <= 0) {
-                myAnimator.SetBool("Alive", false);
+
                 myRigidbody.constraints = RigidbodyConstraints2D.None;
                 isAlive = false;
-                // this.GetComponent<Collider2D>().isTrigger = true;
+
+                StartCoroutine(DestroyEnemyRoutine(3));
+
                 int shootUp = Random.Range(0, 1);
                 if (shootUp == 1) {
                     this.myRigidbody.velocity = new Vector2(10, 3);      
                 } else {
                     this.myRigidbody.velocity = new Vector2(10, -3);
                 }
-
             }
-            
+
+            myAnimator.SetBool("Alive", false);
             myAnimator.SetFloat("Speed", Mathf.Abs(myRigidbody.velocity.x));
             myAnimator.SetBool("Knockback", isKnockedBack);
+
+        } else {
+
+            if(myRigidbody.velocity.x < 0) {
+                myRigidbody.velocity = new Vector2(Mathf.Abs(myRigidbody.velocity.x), myRigidbody.velocity.y);
+            }
+
         }
 
 
@@ -84,4 +93,20 @@ public class EnemyController : MonoBehaviour {
             myRigidbody.velocity = new Vector2(6 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
         }
     }
+
+    void OnCollisionEnter2D(Collision2D other) {
+        if (other.gameObject.tag == "Enemy" && !other.gameObject.GetComponent<EnemyController>().isEnemyAlive()) {
+            // do nothing
+        }
+    }
+
+    public bool isEnemyAlive() {
+        return isAlive;
+    }
+
+    IEnumerator DestroyEnemyRoutine(float time) {
+        yield return new WaitForSeconds(time);
+        Destroy(gameObject);
+    }
+
 }

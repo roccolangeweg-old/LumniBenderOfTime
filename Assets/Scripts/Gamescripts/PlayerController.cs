@@ -3,6 +3,8 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour {
 
+    private GameManager gameManager;
+
     public float baseHealth;
     private float currentHealth;
 
@@ -26,10 +28,10 @@ public class PlayerController : MonoBehaviour {
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
-   
-
 	// Use this for initialization
 	void Start() {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         currentSpeed = baseSpeed;
         currentHealth = baseHealth;
         myRigidbody = GetComponent<Rigidbody2D>();
@@ -40,8 +42,13 @@ public class PlayerController : MonoBehaviour {
 	// Update is called once per frame
 	void Update() {
         grounded = Physics2D.IsTouchingLayers(myCollider, groundLayer);
-
         knockbackTime -= Time.deltaTime;
+
+        /* check if player is still alive */
+        if (currentHealth <= 0) {
+            gameManager.playerDied();
+        }
+
 
         /* check if player is allowed to move */
         if (!isKnockedBack) {

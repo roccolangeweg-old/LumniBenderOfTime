@@ -30,5 +30,18 @@ public class GameManager : MonoBehaviour {
         if (Application.loadedLevelName == "MainMenu" && Input.GetMouseButtonDown(0)) {
             Application.LoadLevel("Gamescreen");
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            if(Application.loadedLevelName == "MainMenu") {
+                Application.Quit();
+            } else {
+                Application.LoadLevel("MainMenu");
+            }
+        }
 	}
+
+    public void playerDied() {
+        Debug.Log("GAME OVER");
+        Application.LoadLevel("MainMenu");
+    }
 }
