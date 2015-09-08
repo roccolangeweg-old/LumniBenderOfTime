@@ -14,9 +14,7 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        Debug.Log(player.transform.position.x);
         distanceToMove = player.transform.position.x - lastPlayerPosition.x;
-        Debug.Log(distanceToMove);
         this.transform.position = new Vector3(this.transform.position.x + distanceToMove, this.transform.position.y, this.transform.position.z);
 
         lastPlayerPosition = player.transform.position;
