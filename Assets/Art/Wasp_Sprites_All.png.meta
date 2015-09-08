@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 63e9508484ddfe04182e6f6bfe25d744
-timeCreated: 1441714242
+timeCreated: 1441717619
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -17,6 +17,7 @@ TextureImporter:
     21300020: Wasp_Sprites_All_10
     21300022: Wasp_Sprites_All_11
     21300024: Wasp_Sprites_All_12
+    21300026: Wasp_Sprites_All_13
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -39,8 +40,8 @@ TextureImporter:
   cubemapConvolutionSteps: 8
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
-  textureFormat: -1
-  maxTextureSize: 2048
+  textureFormat: -3
+  maxTextureSize: 512
   textureSettings:
     filterMode: -1
     aniso: 16
@@ -56,7 +57,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 128
   alphaIsTransparency: 1
   textureType: 8
   buildTargetSettings: []
@@ -186,6 +187,16 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
+        y: 0
+        width: 128
+        height: 128
+      alignment: 7
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Wasp_Sprites_All_13
+      rect:
+        serializedVersion: 2
+        x: 128
         y: 0
         width: 128
         height: 128
