@@ -8,6 +8,9 @@ public class EnemyController : MonoBehaviour {
     public bool isAerialType;
     public float moveSpeed;
 
+    private Vector3 basePosition;
+    public float flyingSwing;
+
     private int currentHealth;
     private bool isKnockedBack;
 
@@ -23,6 +26,7 @@ public class EnemyController : MonoBehaviour {
         currentHealth = baseHealth;
         myRigidbody = this.GetComponent<Rigidbody2D>();
         myAnimator = this.GetComponent<Animator>();
+        basePosition = transform.position;
 	}
 	
 	// Update is called once per frame
@@ -36,7 +40,16 @@ public class EnemyController : MonoBehaviour {
             isKnockedBack = false;
         }
 
+        if (isAerialType) {
+
+            if(transform.position.y < basePosition.y - flyingSwing) {
+                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, flyingSwing * 3);
+            }
+
+        }
+
         myAnimator.SetFloat("Speed", Mathf.Abs(myRigidbody.velocity.x));
+        myAnimator.SetBool("Knockback", isKnockedBack);
 
         if (currentHealth < 0) {
             myAnimator.SetBool("Alive", false);
@@ -44,7 +57,6 @@ public class EnemyController : MonoBehaviour {
             this.myRigidbody.velocity = new Vector2(0,0);
         }
 
-        Debug.Log(myRigidbody.velocity.x);
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -53,7 +65,7 @@ public class EnemyController : MonoBehaviour {
 
             isKnockedBack = true;
             knockbackTime = knockbackLength;
-            myRigidbody.velocity = new Vector2(3 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
+            myRigidbody.velocity = new Vector2(6 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
         }
     }
 }
