@@ -23,6 +23,9 @@ public class EnemyController : MonoBehaviour {
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
 
+    public PhysicsMaterial2D deathMaterial;
+    public GameObject explosion;
+
 	// Use this for initialization
 	void Start () {
         currentHealth = baseHealth;
@@ -58,13 +61,19 @@ public class EnemyController : MonoBehaviour {
                 myRigidbody.constraints = RigidbodyConstraints2D.None;
                 isAlive = false;
 
+                gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
+
+                GetComponent<Collider2D>().sharedMaterial = deathMaterial;
+
                 StartCoroutine(DestroyEnemyRoutine(3));
 
-                int shootUp = Random.Range(0, 1);
-                if (shootUp == 1) {
-                    this.myRigidbody.velocity = new Vector2(10, 3);      
+                GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);
+                newExplosion.GetComponent<Animator>().SetBool("Aerial", isAerialType);
+
+                if (isAerialType) {
+                    this.myRigidbody.velocity = new Vector2(8, -3);      
                 } else {
-                    this.myRigidbody.velocity = new Vector2(10, -3);
+                    this.myRigidbody.velocity = new Vector2(8, 6);
                 }
             }
 
