@@ -39,7 +39,7 @@ public class EnemyController : MonoBehaviour {
 	void Update () {
 
         if (isAlive) {
-        
+
             knockbackTime -= Time.deltaTime;
 
             if (!isKnockedBack) {
@@ -48,12 +48,11 @@ public class EnemyController : MonoBehaviour {
                 isKnockedBack = false;
             }
 
-            if (isAerialType) {
 
+            if (isAerialType) {
                 if (transform.position.y < basePosition.y - flyingSwing) {
                     myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, flyingSwing * 3);
                 }
-
             }
 
             if (currentHealth <= 0) {
@@ -65,7 +64,7 @@ public class EnemyController : MonoBehaviour {
 
                 GetComponent<Collider2D>().sharedMaterial = deathMaterial;
 
-                StartCoroutine(DestroyEnemyRoutine(3));
+                StartCoroutine(DestroyEnemyRoutine(1));
 
                 GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);
                 newExplosion.GetComponent<Animator>().SetBool("Aerial", isAerialType);
@@ -118,7 +117,6 @@ public class EnemyController : MonoBehaviour {
     }
 
     public IEnumerator destroyRemains() {
-        Debug.Log("DESTROYING REMAINS");
         GetComponent<Collider2D>().isTrigger = true;
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
 

@@ -9,6 +9,7 @@ public class EnemyGenerator : MonoBehaviour {
 
     private int currentListLength;
     private float secondsSinceEnemy;
+    private float distanceSinceLastSpawn;
 
 	// Use this for initialization
 	void Start () {
