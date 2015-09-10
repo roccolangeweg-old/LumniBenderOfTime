@@ -9,7 +9,9 @@ public class EnemyGenerator : MonoBehaviour {
 
     private int currentListLength;
     private float secondsSinceEnemy;
-    private float distanceSinceLastSpawn;
+
+    public float distanceBetweenSpawn;
+    private float lastSpawnPosition;
 
 	// Use this for initialization
 	void Start () {
@@ -18,10 +20,11 @@ public class EnemyGenerator : MonoBehaviour {
 	
     void PrepareEnemySpawn() {
 
-        float timeTillSpawn = Random.Range(0f, 2f);
+        float timeTillSpawn = Random.Range(0f, 1f);
         GameObject enemy = enemyList[Random.Range(0, enemyList.Count)];
-
-        StartCoroutine(spawnEnemy(enemy, timeTillSpawn));
+        if (transform.position.x - lastSpawnPosition > distanceBetweenSpawn) {
+            StartCoroutine(spawnEnemy(enemy, timeTillSpawn));
+        }
     }
 
     IEnumerator spawnEnemy(GameObject enemy, float time) {
@@ -30,6 +33,7 @@ public class EnemyGenerator : MonoBehaviour {
 
         GameObject newEnemy = (GameObject) Instantiate(enemy);
         newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        lastSpawnPosition = transform.position.x;
 
     }
 
