@@ -87,11 +87,15 @@ public class PlayerController : MonoBehaviour {
 
         if (other.gameObject.tag == "Enemy" && !isBasicAttacking) {
             currentHealth-=0.5f;
-            isKnockedBack = true;
-            knockbackTime = knockbackLength;
-            myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
+            knockPlayerBack();
         }
         
+    }
+
+    private void knockPlayerBack() {
+        isKnockedBack = true;
+        knockbackTime = knockbackLength;
+        myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
     }
     
 }

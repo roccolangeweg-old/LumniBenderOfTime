@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
     private bool paused;
     private float currentScale;
 
+    public Canvas pauseMenu;
+   
     //Awake is always called before any Start functions
     void Awake() {
         /* check if gamemanager already exists */
@@ -25,6 +27,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         currentScale = Time.timeScale;
+        //pauseMenu = pauseMenu.GetComponentInChildren<Canvas>();
 	}
 	
 	// Update is called once per frame
@@ -46,7 +49,6 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.A)) {
 
             if(Time.timeScale != currentScale) {
-                Debug.Log("SPEED BACK UP");
                 /* speed up the game back to the previous timescale */
                 StartCoroutine(updateTimescale(Time.timeScale, currentScale));
             } else {
@@ -59,18 +61,16 @@ public class GameManager : MonoBehaviour {
 	}
 
     public void playerDied() {
-        Debug.Log("GAME OVER");
         Application.LoadLevel("MainMenu");
     }
 
     private void updatePauseState() {
         paused = !paused;
+        pauseMenu.enabled = !pauseMenu.enabled;
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
     }
 
     IEnumerator updateTimescale(float currentScale, float targetScale) {
-
-
         if (currentScale < targetScale) {
             while (currentScale < targetScale) {
                 currentScale += 0.1f;
@@ -84,6 +84,5 @@ public class GameManager : MonoBehaviour {
                 yield return new WaitForEndOfFrame();
             }
         }
-
     }
 }
