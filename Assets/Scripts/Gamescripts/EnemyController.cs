@@ -58,7 +58,7 @@ public class EnemyController : MonoBehaviour {
 
             if (currentHealth <= 0) {
 
-                myRigidbody.constraints = RigidbodyConstraints2D.None;
+                //myRigidbody.constraints = RigidbodyConstraints2D.None;
                 isAlive = false;
 
                 gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
@@ -87,10 +87,9 @@ public class EnemyController : MonoBehaviour {
                 myRigidbody.velocity = new Vector2(Mathf.Abs(myRigidbody.velocity.x), myRigidbody.velocity.y);
             }
 
+            transform.Rotate (0,0,270*Time.deltaTime);
+
         }
-
-
-
 	}
 
     void OnTriggerEnter2D(Collider2D other) {
@@ -105,7 +104,12 @@ public class EnemyController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
         if (other.gameObject.tag == "Enemy" && !other.gameObject.GetComponent<EnemyController>().isEnemyAlive()) {
-            // do nothing
+            currentHealth-=1;
+            isKnockedBack = true;
+            knockbackTime = knockbackLength;
+            myRigidbody.velocity = new Vector2(2,2);
+
+            StartCoroutine(other.gameObject.GetComponent<EnemyController>().destroyRemains());
         }
     }
 
@@ -113,9 +117,19 @@ public class EnemyController : MonoBehaviour {
         return isAlive;
     }
 
+    public IEnumerator destroyRemains() {
+        Debug.Log("DESTROYING REMAINS");
+        GetComponent<Collider2D>().isTrigger = true;
+        transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
+
+        yield return new WaitForSeconds(3);
+
+        Destroy(gameObject);
+    }
+
     IEnumerator DestroyEnemyRoutine(float time) {
         yield return new WaitForSeconds(time);
-        Destroy(gameObject);
+        StartCoroutine(destroyRemains());
     }
 
 }
