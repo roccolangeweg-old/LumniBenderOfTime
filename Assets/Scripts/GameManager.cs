@@ -131,7 +131,7 @@ public class GameManager : MonoBehaviour {
         Application.LoadLevel("MainMenu");
     }
 
-    IEnumerator updateTimescale(float currentScale, float targetScale) {
+    public IEnumerator updateTimescale(float currentScale, float targetScale) {
         if (currentScale < targetScale) {
             while (currentScale < targetScale) {
                 currentScale += 0.1f;

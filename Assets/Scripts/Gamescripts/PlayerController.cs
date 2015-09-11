@@ -115,11 +115,34 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void ChargeTimebend() {
-        if(!timebendReady && !timebendActive) {
+        if (!timebendReady && !timebendActive) {
             timebendCharge++;
             FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
 
-            if (timebendCharge >= 100) { timebendReady = true; }
+            if (timebendCharge >= 100) {
+                timebendReady = true;
+            }
+        } else if (timebendActive) {
+           
+            timebendCharge-=5;
+            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
+
+            if (timebendCharge < 0) {
+                timebendActive = false;
+                StartCoroutine(gameManager.updateTimescale(Time.timeScale, 1));
+                timebendCharge = 0;
+            }
+
+        }
+    }
+
+    public void ActivateTimebend() {
+
+        if (timebendReady && !timebendActive) {
+            timebendActive = true;
+            timebendReady = false;
+
+            StartCoroutine(gameManager.updateTimescale(Time.timeScale, 0.5f));
         }
     }
     
