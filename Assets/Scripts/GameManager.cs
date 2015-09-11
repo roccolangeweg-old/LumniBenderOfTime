@@ -49,8 +49,10 @@ public class GameManager : MonoBehaviour {
         }
 
         if (Application.loadedLevelName == "ScoreScene") {
-            totalOrbs = PlayerPrefs.SetInt("Orbs", totalOrbs + collectedOrbs);
-            totalRelics = PlayerPrefs.SetInt("Relics", totalRelics + collectedRelics);
+            totalOrbs += collectedOrbs;
+            totalRelics += collectedRelics;
+            PlayerPrefs.SetInt("Orbs", totalOrbs);
+            PlayerPrefs.SetInt("Relics", totalRelics);
 
             PlayerPrefs.Save();
         }
@@ -98,7 +100,7 @@ public class GameManager : MonoBehaviour {
         return healthMultiplier;
     }
 
-    public int addOrbs(int amount) {
+    public void addOrbs(int amount) {
         collectedOrbs += amount;
     }
 
