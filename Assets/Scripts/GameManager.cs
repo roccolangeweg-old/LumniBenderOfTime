@@ -12,11 +12,11 @@ public class GameManager : MonoBehaviour {
     private Canvas pauseScreen;
 
     /* stuff to save */
-    private float collectedOrbs;
-    private float totalOrbs;
+    private int collectedOrbs;
+    private int totalOrbs;
 
-    private float totalRelics;
-    private float collectedRelics;
+    private int totalRelics;
+    private int collectedRelics;
    
     //Awake is always called before any Start functions
     void Awake() {
