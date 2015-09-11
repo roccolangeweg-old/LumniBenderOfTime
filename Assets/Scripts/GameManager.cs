@@ -7,8 +7,9 @@ public class GameManager : MonoBehaviour {
 
     private bool paused;
     private float currentScale;
+    private float healthMultiplier;
 
-    public Canvas pauseMenu;
+    //public Canvas pauseMenu;
    
     //Awake is always called before any Start functions
     void Awake() {
@@ -27,6 +28,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         currentScale = Time.timeScale;
+        healthMultiplier = 1;
         //pauseMenu = pauseMenu.GetComponentInChildren<Canvas>();
 	}
 	
@@ -64,9 +66,13 @@ public class GameManager : MonoBehaviour {
         Application.LoadLevel("MainMenu");
     }
 
+    public float getHealthMultiplier() {
+        return healthMultiplier;
+    }
+
     private void updatePauseState() {
         paused = !paused;
-        pauseMenu.enabled = !pauseMenu.enabled;
+        //pauseMenu.enabled = !pauseMenu.enabled;
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
     }
 

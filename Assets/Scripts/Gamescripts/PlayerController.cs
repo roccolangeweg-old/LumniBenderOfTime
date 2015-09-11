@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour {
 
     public float baseHealth;
     private float currentHealth;
+    private float totalHealth;
 
     public float baseSpeed;
     private float currentSpeed;
@@ -33,7 +34,7 @@ public class PlayerController : MonoBehaviour {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         currentSpeed = baseSpeed;
-        currentHealth = baseHealth;
+        totalHealth = currentHealth = baseHealth * gameManager.getHealthMultiplier();
         myRigidbody = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
@@ -81,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
         myAnimator.SetBool("BasicAttacking", isBasicAttacking);
         myAnimator.SetBool("Grounded", grounded);
+        myAnimator.SetBool("Knockback", isKnockedBack);
 	}
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -96,6 +98,14 @@ public class PlayerController : MonoBehaviour {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
         myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
+    }
+
+    public float getTotalHealth() {
+        return totalHealth;
+    }
+
+    public float getCurrentHealth() {
+        return currentHealth;
     }
     
 }
