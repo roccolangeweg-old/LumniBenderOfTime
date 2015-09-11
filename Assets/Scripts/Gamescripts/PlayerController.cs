@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update() {
+	void Update() { 
         grounded = Physics2D.IsTouchingLayers(myCollider, groundLayer);
         knockbackTime -= Time.deltaTime;
 

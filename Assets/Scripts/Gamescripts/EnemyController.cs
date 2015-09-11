@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EnemyController : MonoBehaviour {
 
+    private GameManager gameManager;
+
     public int orbsRewarded;
     public int baseHealth;
     public bool isAerialType;
@@ -28,6 +30,7 @@ public class EnemyController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
         currentHealth = baseHealth;
         isAlive = true;
         myRigidbody = this.GetComponent<Rigidbody2D>();
@@ -71,6 +74,12 @@ public class EnemyController : MonoBehaviour {
                 /* create explosion on defeated enemy location */
                 GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
+
+                if(orbsRewarded > 0) {
+                    gameManager.addOrbs(orbsRewarded);
+                }
+
+
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */
                 if (isAerialType) {

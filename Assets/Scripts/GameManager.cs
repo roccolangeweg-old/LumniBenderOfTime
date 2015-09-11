@@ -104,6 +104,10 @@ public class GameManager : MonoBehaviour {
         collectedOrbs += amount;
     }
 
+    public int getCollectedOrbs() {
+        return collectedOrbs;
+    }
+
     public void UpdatePauseState() {
         paused = !paused;
         pauseScreen.enabled = !pauseScreen.enabled;

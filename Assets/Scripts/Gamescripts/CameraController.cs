@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour {
 
+    private GameManager gameManager;
+
     private PlayerController player;
     private Vector3 lastPlayerPosition;
     private float distanceToMove;
@@ -21,6 +23,7 @@ public class CameraController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         player = FindObjectOfType<PlayerController>();
+        gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
 
         heartUIs = new List<Image>();
 
@@ -53,6 +56,9 @@ public class CameraController : MonoBehaviour {
             lastPlayerHealth = player.getCurrentHealth();
             updateHearts(lastPlayerHealth);
         }
+
+        Text orbText = HUDCanvas.GetComponentInChildren<Text>();
+        orbText.text = gameManager.getCollectedOrbs().ToString();
 
 	}
 
