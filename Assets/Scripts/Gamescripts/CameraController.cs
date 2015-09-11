@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         player = FindObjectOfType<PlayerController>();
-        gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         heartUIs = new List<Image>();
 
@@ -43,6 +43,8 @@ public class CameraController : MonoBehaviour {
             newImage.rectTransform.anchoredPosition3D = new Vector3(35 + 35 * i, -30.5f, 0);
             newImage.rectTransform.localScale = new Vector3(0.33f,0.33f,1);
         }
+
+        StartCoroutine(removeControls());
     }
 	
 	// Update is called once per frame
@@ -79,5 +81,10 @@ public class CameraController : MonoBehaviour {
             heartUIs[i].GetComponent<Image>().sprite = selectedSprite;
         }
     
+    }
+
+    private IEnumerator removeControls() {
+        yield return new WaitForSeconds(3);
+        HUDCanvas.transform.FindChild("Controls").GetComponent<Animator>().SetBool("FadeOut", true);
     }
 }

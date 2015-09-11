@@ -49,12 +49,17 @@ public class GameManager : MonoBehaviour {
         }
 
         if (Application.loadedLevelName == "ScoreScene") {
-            totalOrbs += collectedOrbs;
-            totalRelics += collectedRelics;
-            PlayerPrefs.SetInt("Orbs", totalOrbs);
-            PlayerPrefs.SetInt("Relics", totalRelics);
 
-            PlayerPrefs.Save();
+            if(instance == this) {
+                totalOrbs += collectedOrbs;
+                totalRelics += collectedRelics;
+                PlayerPrefs.SetInt("Orbs", totalOrbs);
+                PlayerPrefs.SetInt("Relics", totalRelics);
+
+                PlayerPrefs.Save();
+
+                Debug.Log(PlayerPrefs.GetInt("Orbs"));
+            }
         }
     }
 	
@@ -62,16 +67,14 @@ public class GameManager : MonoBehaviour {
 	void Update () {
 	
         if (Application.loadedLevelName == "MainMenu" && Input.GetMouseButtonDown(0)) {
-            Application.LoadLevel("Gamescreen");
-            paused = false;
+            StartGame();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainMenu") {
                 Application.Quit();
             } else if (Application.loadedLevelName == "Gamescreen" && paused) {
-                Time.timeScale = 1;
-                Application.LoadLevel("MainMenu");
+                ReturnToMain();
             } else if (Application.loadedLevelName == "Gamescreen" && !paused) {
                 UpdatePauseState();
             }
@@ -93,7 +96,7 @@ public class GameManager : MonoBehaviour {
 
     public void playerDied() {
         Time.timeScale = 1;
-        Application.LoadLevel("MainMenu");
+        Application.LoadLevel("ScoreScene");
     }
 
     public float getHealthMultiplier() {
@@ -108,10 +111,24 @@ public class GameManager : MonoBehaviour {
         return collectedOrbs;
     }
 
+    public int getTotalOrbs() {
+        return totalOrbs;
+    }
+
     public void UpdatePauseState() {
         paused = !paused;
         pauseScreen.enabled = !pauseScreen.enabled;
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+    }
+
+    public void StartGame() {
+        Application.LoadLevel("Gamescreen");
+        paused = false;
+    }
+
+    public void ReturnToMain() {
+        Time.timeScale = 1;
+        Application.LoadLevel("MainMenu");
     }
 
     IEnumerator updateTimescale(float currentScale, float targetScale) {

@@ -75,6 +75,7 @@ public class EnemyController : MonoBehaviour {
                 GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
 
+                Debug.Log(orbsRewarded);
                 if(orbsRewarded > 0) {
                     gameManager.addOrbs(orbsRewarded);
                 }
