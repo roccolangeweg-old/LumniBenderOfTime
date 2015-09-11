@@ -69,7 +69,7 @@ public class EnemyController : MonoBehaviour {
                 StartCoroutine(DestroyEnemyRoutine(1));
 
                 /* create explosion on defeated enemy location */
-                GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y +0.5f, transform.position.z), Quaternion.identity);  
+                GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */

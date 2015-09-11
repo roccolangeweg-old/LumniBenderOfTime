@@ -9,7 +9,14 @@ public class GameManager : MonoBehaviour {
     private float currentScale;
     private float healthMultiplier;
 
-    //public Canvas pauseMenu;
+    private Canvas pauseScreen;
+
+    /* stuff to save */
+    private float collectedOrbs;
+    private float totalOrbs;
+
+    private float totalRelics;
+    private float collectedRelics;
    
     //Awake is always called before any Start functions
     void Awake() {
@@ -29,8 +36,25 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         currentScale = Time.timeScale;
         healthMultiplier = 1;
-        //pauseMenu = pauseMenu.GetComponentInChildren<Canvas>();
+
+        totalOrbs = PlayerPrefs.GetInt("Orbs");
+        totalRelics = PlayerPrefs.GetInt("Relics");
 	}
+
+    void OnLevelWasLoaded() {
+        if (Application.loadedLevelName == "Gamescreen") {
+            pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
+            collectedOrbs = 0;
+            collectedRelics = 0;
+        }
+
+        if (Application.loadedLevelName == "ScoreScene") {
+            totalOrbs = PlayerPrefs.SetInt("Orbs", totalOrbs + collectedOrbs);
+            totalRelics = PlayerPrefs.SetInt("Relics", totalRelics + collectedRelics);
+
+            PlayerPrefs.Save();
+        }
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -43,8 +67,11 @@ public class GameManager : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainMenu") {
                 Application.Quit();
-            } else {
-                updatePauseState();
+            } else if (Application.loadedLevelName == "Gamescreen" && paused) {
+                Time.timeScale = 1;
+                Application.LoadLevel("MainMenu");
+            } else if (Application.loadedLevelName == "Gamescreen" && !paused) {
+                UpdatePauseState();
             }
         }
 
@@ -63,6 +90,7 @@ public class GameManager : MonoBehaviour {
 	}
 
     public void playerDied() {
+        Time.timeScale = 1;
         Application.LoadLevel("MainMenu");
     }
 
@@ -70,9 +98,13 @@ public class GameManager : MonoBehaviour {
         return healthMultiplier;
     }
 
-    private void updatePauseState() {
+    public int addOrbs(int amount) {
+        collectedOrbs += amount;
+    }
+
+    public void UpdatePauseState() {
         paused = !paused;
-        //pauseMenu.enabled = !pauseMenu.enabled;
+        pauseScreen.enabled = !pauseScreen.enabled;
         Time.timeScale = Time.timeScale == 0 ? 1 : 0;
     }
 

@@ -28,9 +28,6 @@ public class CameraController : MonoBehaviour {
         totalHearts = Mathf.CeilToInt(lastPlayerHealth);
 
         for(int i = 0; i < totalHearts; i++) {
-            Debug.Log(i);
-            Debug.Log(totalHearts);
-
             GameObject newHeart = new GameObject("Heart");
             newHeart.transform.SetParent(HUDCanvas.transform);
 
@@ -42,8 +39,6 @@ public class CameraController : MonoBehaviour {
             newImage.rectTransform.anchorMin = new Vector2(0,1);
             newImage.rectTransform.anchoredPosition3D = new Vector3(35 + 35 * i, -30.5f, 0);
             newImage.rectTransform.localScale = new Vector3(0.33f,0.33f,1);
-
-
         }
     }
 	
