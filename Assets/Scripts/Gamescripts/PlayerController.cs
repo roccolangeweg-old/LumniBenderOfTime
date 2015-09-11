@@ -29,6 +29,10 @@ public class PlayerController : MonoBehaviour {
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
+    private bool timebendActive;
+    private bool timebendReady;
+    private int timebendCharge;
+
 	// Use this for initialization
 	void Start() {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -38,6 +42,8 @@ public class PlayerController : MonoBehaviour {
         myRigidbody = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
+
+        InvokeRepeating("ChargeTimebend", 0f, 0.25f);
 	}
 	
 	// Update is called once per frame
@@ -106,6 +112,15 @@ public class PlayerController : MonoBehaviour {
 
     public float getCurrentHealth() {
         return currentHealth;
+    }
+
+    private void ChargeTimebend() {
+        if(!timebendReady && !timebendActive) {
+            timebendCharge++;
+            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
+
+            if (timebendCharge >= 100) { timebendReady = true; }
+        }
     }
     
 }
