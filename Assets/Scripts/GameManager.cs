@@ -3,10 +3,11 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-    public static GameManager instance = null;
+    public static GameManager managerInstance = null;
+
+    private GoogleAnalyticsV3 GA3;
 
     private bool paused;
-    private float currentScale;
     private float healthMultiplier;
 
     private Canvas pauseScreen;
@@ -21,21 +22,25 @@ public class GameManager : MonoBehaviour {
     //Awake is always called before any Start functions
     void Awake() {
         /* check if gamemanager already exists */
-        if (instance == null) {
-            instance = this;
-        } else if (instance != this) {
+        if (managerInstance == null) {
+            managerInstance = this;
+        } else if (managerInstance != this) {
             /* enforce Singleton, only 1 game manager may exist */
             Destroy(gameObject);
         }    
-            
+        GA3 = FindObjectOfType<GoogleAnalyticsV3>();
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
     }
            
 	// Use this for initialization
 	void Start () {
-        currentScale = Time.timeScale;
+
+
+
         healthMultiplier = 1;
+
+        GA3.LogEvent("StartScreen","Start","Start",1);
 
         totalOrbs = PlayerPrefs.GetInt("Orbs");
         totalRelics = PlayerPrefs.GetInt("Relics");
@@ -50,17 +55,17 @@ public class GameManager : MonoBehaviour {
 
         if (Application.loadedLevelName == "ScoreScene") {
 
-            if(instance == this) {
+            if(managerInstance == this) {
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
                 PlayerPrefs.SetInt("Orbs", totalOrbs);
                 PlayerPrefs.SetInt("Relics", totalRelics);
 
                 PlayerPrefs.Save();
-
-                Debug.Log(PlayerPrefs.GetInt("Orbs"));
             }
         }
+
+        GA3 = FindObjectOfType<GoogleAnalyticsV3>();
     }
 	
 	// Update is called once per frame
@@ -78,19 +83,6 @@ public class GameManager : MonoBehaviour {
             } else if (Application.loadedLevelName == "Gamescreen" && !paused) {
                 UpdatePauseState();
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.A)) {
-
-            if(Time.timeScale != currentScale) {
-                /* speed up the game back to the previous timescale */
-                StartCoroutine(updateTimescale(Time.timeScale, currentScale));
-            } else {
-                /* slow down the game to defined timescale */
-                currentScale = Time.timeScale;
-                StartCoroutine(updateTimescale(Time.timeScale, 0.6f));
-            }
-
         }
 	}
 
@@ -145,5 +137,9 @@ public class GameManager : MonoBehaviour {
                 yield return new WaitForEndOfFrame();
             }
         }
+    }
+
+    public GoogleAnalyticsV3 getAnalytics() {
+        return GA3;
     }
 }

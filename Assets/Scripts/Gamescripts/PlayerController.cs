@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour {
     private bool isBasicAttacking;
     private bool isKnockedBack;
 
+    private bool playerDied;
+
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
@@ -43,6 +45,8 @@ public class PlayerController : MonoBehaviour {
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
 
+        playerDied = false;
+
         InvokeRepeating("ChargeTimebend", 0f, 0.25f);
 	}
 	
@@ -53,42 +57,45 @@ public class PlayerController : MonoBehaviour {
 
         /* check if player is still alive */
         if (currentHealth <= 0) {
-            gameManager.playerDied();
+            if(!playerDied) {
+                StartCoroutine(startPlayerDeathAnimation());
+            }
+        } else {
+            
+            /* check if player is allowed to move */
+            if (!isKnockedBack) {
+                myRigidbody.velocity = new Vector2(currentSpeed, myRigidbody.velocity.y);
+            } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
+                isKnockedBack = false;
+            }
+            
+            /* jump when input it detected, and player is currently touching the ground */
+            if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
+                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+            }
+            
+            /* check if animation for attack has finished */
+            if (myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player_BasicAttack") && myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
+                isBasicAttacking = false;
+                currentSpeed = this.baseSpeed;
+                
+            /* else check if attack input is pressed and isBasicAttacking is false */
+            } else if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
+                
+                isBasicAttacking = true;
+                GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 1.8f, transform.position.y, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
+                currentSpeed = currentSpeed * 1.5f;
+                
+                /* update the attack scale */
+                loadedBasicAttack.transform.localScale = new Vector3(2.3f,2f,1f);
+            } 
+
+            myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
+            myAnimator.SetBool("BasicAttacking", isBasicAttacking);
+            myAnimator.SetBool("Grounded", grounded);
+            myAnimator.SetBool("Knockback", isKnockedBack);
         }
-
-
-        /* check if player is allowed to move */
-        if (!isKnockedBack) {
-            myRigidbody.velocity = new Vector2(currentSpeed, myRigidbody.velocity.y);
-        } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
-            isKnockedBack = false;
-        }
-
-        /* jump when input it detected, and player is currently touching the ground */
-        if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
-            myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
-        }
-
-        /* check if animation for attack has finished */
-        if (myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player_BasicAttack") && myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
-            isBasicAttacking = false;
-            currentSpeed = this.baseSpeed;
-        
-        /* else check if attack input is pressed and isBasicAttacking is false */
-        } else if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
-
-            isBasicAttacking = true;
-            GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 1.9f, transform.position.y, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
-            currentSpeed = currentSpeed * 1.5f;
-
-            /* update the attack scale */
-            loadedBasicAttack.transform.localScale = new Vector3(1.8f,1.8f,1f);
-        } 
-
-        myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
-        myAnimator.SetBool("BasicAttacking", isBasicAttacking);
-        myAnimator.SetBool("Grounded", grounded);
-        myAnimator.SetBool("Knockback", isKnockedBack);
+       
 	}
 
     void OnCollisionEnter2D(Collision2D other) {
@@ -100,12 +107,7 @@ public class PlayerController : MonoBehaviour {
         
     }
 
-    private void knockPlayerBack() {
-        isKnockedBack = true;
-        knockbackTime = knockbackLength;
-        myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
-    }
-
+    /* CUSTOM PUBLIC FUNCTIONS */
     public float getTotalHealth() {
         return totalHealth;
     }
@@ -114,36 +116,54 @@ public class PlayerController : MonoBehaviour {
         return currentHealth;
     }
 
-    private void ChargeTimebend() {
-        if (!timebendReady && !timebendActive) {
-            timebendCharge++;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-
-            if (timebendCharge >= 100) {
-                timebendReady = true;
-            }
-        } else if (timebendActive) {
-           
-            timebendCharge-=5;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-
-            if (timebendCharge < 0) {
-                timebendActive = false;
-                StartCoroutine(gameManager.updateTimescale(Time.timeScale, 1));
-                timebendCharge = 0;
-            }
-
-        }
-    }
-
     public void ActivateTimebend() {
 
-        if (timebendReady && !timebendActive) {
+        if (timebendReady && !timebendActive && !playerDied) {
             timebendActive = true;
             timebendReady = false;
 
             StartCoroutine(gameManager.updateTimescale(Time.timeScale, 0.5f));
         }
+    }
+
+    /* CUSTOM PRIVATE FUNCTIONS */
+    private void ChargeTimebend() {
+        if (!timebendReady && !timebendActive) {
+            timebendCharge++;
+            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
+            
+            if (timebendCharge >= 100) {
+                timebendReady = true;
+            }
+        } else if (timebendActive) {
+            
+            timebendCharge-=5;
+            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
+            
+            if (timebendCharge < 0) {
+                timebendActive = false;
+                StartCoroutine(gameManager.updateTimescale(Time.timeScale, 1));
+                timebendCharge = 0;
+            }  
+        }
+    }
+
+    private void knockPlayerBack() {
+        isKnockedBack = true;
+        knockbackTime = knockbackLength;
+        myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
+    }
+
+    private IEnumerator startPlayerDeathAnimation() {
+        playerDied = true;
+        myAnimator.SetTrigger("Death");
+        gameObject.layer = LayerMask.NameToLayer("DeathPlayer");
+        myRigidbody.velocity = new Vector2(0,0);
+        Time.timeScale = 0.5f;
+
+        yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorClipInfo(0).Length);
+
+        gameManager.playerDied();
     }
     
 }

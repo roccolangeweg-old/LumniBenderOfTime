@@ -87,4 +87,5 @@ public class CameraController : MonoBehaviour {
         yield return new WaitForSeconds(3);
         HUDCanvas.transform.FindChild("Controls").GetComponent<Animator>().SetBool("FadeOut", true);
     }
+
 }
