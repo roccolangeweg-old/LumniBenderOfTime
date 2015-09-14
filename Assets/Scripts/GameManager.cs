@@ -35,22 +35,25 @@ public class GameManager : MonoBehaviour {
            
 	// Use this for initialization
 	void Start () {
-
-
-
         healthMultiplier = 1;
 
-        GA3.LogEvent("StartScreen","Start","Start",1);
+        GA3.LogEvent("MainMenu","Main","Application Loaded",1);
 
         totalOrbs = PlayerPrefs.GetInt("Orbs");
         totalRelics = PlayerPrefs.GetInt("Relics");
 	}
 
     void OnLevelWasLoaded() {
+
+        GA3 = FindObjectOfType<GoogleAnalyticsV3>();
+
         if (Application.loadedLevelName == "Gamescreen") {
+
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
             collectedOrbs = 0;
             collectedRelics = 0;
+
+            GA3.LogEvent("Game","Game","Game started",1);
         }
 
         if (Application.loadedLevelName == "ScoreScene") {
@@ -64,8 +67,6 @@ public class GameManager : MonoBehaviour {
                 PlayerPrefs.Save();
             }
         }
-
-        GA3 = FindObjectOfType<GoogleAnalyticsV3>();
     }
 	
 	// Update is called once per frame

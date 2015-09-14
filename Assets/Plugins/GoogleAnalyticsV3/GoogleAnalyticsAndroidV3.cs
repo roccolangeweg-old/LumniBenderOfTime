@@ -70,6 +70,7 @@ public class GoogleAnalyticsAndroidV3 : IDisposable {
       tracker = googleAnalyticsSingleton.Call<AndroidJavaObject>(
           "getTracker", trackingCode);
 
+
       SetTrackerVal(Fields.SAMPLE_RATE, sampleFrequency.ToString());
       SetTrackerVal(Fields.APP_NAME, appName);
       SetTrackerVal(Fields.APP_ID, bundleIdentifier);

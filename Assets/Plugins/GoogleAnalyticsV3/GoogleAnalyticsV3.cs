@@ -32,7 +32,6 @@ using System.Collections.Generic;
 */
 public class GoogleAnalyticsV3 : MonoBehaviour {
   private string uncaughtExceptionStackTrace = null;
-  private bool initialized = false;
 
   public enum DebugMode {
     ERROR,
@@ -464,7 +463,6 @@ public void DispatchHits() {
   }
 
   public void Dispose() {
-    initialized = false;
 #if UNITY_ANDROID && !UNITY_EDITOR
     androidTracker.Dispose();
 #elif UNITY_IPHONE && !UNITY_EDITOR
