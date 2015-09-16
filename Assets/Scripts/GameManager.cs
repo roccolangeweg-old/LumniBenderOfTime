@@ -37,8 +37,6 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         healthMultiplier = 1;
 
-        GA3.LogEvent("MainMenu","Main","Application Loaded",1);
-
         totalOrbs = PlayerPrefs.GetInt("Orbs");
         totalRelics = PlayerPrefs.GetInt("Relics");
 	}
@@ -46,19 +44,17 @@ public class GameManager : MonoBehaviour {
     void OnLevelWasLoaded() {
 
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
+        GA3.LogScreen(Application.loadedLevelName);
 
-        if (Application.loadedLevelName == "Gamescreen") {
+        if (Application.loadedLevelName == "GameScene") {
 
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
             collectedOrbs = 0;
             collectedRelics = 0;
 
-            GA3.LogEvent("Game","Game","Game started",1);
-        }
+        } else if (Application.loadedLevelName == "ScoreScene") {
 
-        if (Application.loadedLevelName == "ScoreScene") {
-
-            if(managerInstance == this) {
+            if (managerInstance == this) {
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
                 PlayerPrefs.SetInt("Orbs", totalOrbs);
@@ -72,16 +68,16 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-        if (Application.loadedLevelName == "MainMenu" && Input.GetMouseButtonDown(0)) {
+        if (Application.loadedLevelName == "MainScene" && Input.GetMouseButtonDown(0)) {
             StartGame();
         }
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            if(Application.loadedLevelName == "MainMenu") {
+            if(Application.loadedLevelName == "MainScene") {
                 Application.Quit();
-            } else if (Application.loadedLevelName == "Gamescreen" && paused) {
+            } else if (Application.loadedLevelName == "GameScene" && paused) {
                 ReturnToMain();
-            } else if (Application.loadedLevelName == "Gamescreen" && !paused) {
+            } else if (Application.loadedLevelName == "GameScene" && !paused) {
                 UpdatePauseState();
             }
         }
@@ -115,13 +111,13 @@ public class GameManager : MonoBehaviour {
     }
 
     public void StartGame() {
-        Application.LoadLevel("Gamescreen");
+        Application.LoadLevel("GameScene");
         paused = false;
     }
 
     public void ReturnToMain() {
         Time.timeScale = 1;
-        Application.LoadLevel("MainMenu");
+        Application.LoadLevel("MainScene");
     }
 
     public IEnumerator updateTimescale(float currentScale, float targetScale) {

@@ -13,19 +13,19 @@ public class ScoreScript : MonoBehaviour {
 	void Start () {
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        gameManager.getAnalytics().LogEvent("Scorescreen","Score","Orbs Collected",gameManager.getCollectedOrbs());
+        gameManager.getAnalytics().LogEvent("Statistics","Score","Orbs Collected",gameManager.getCollectedOrbs());
 
         collectedOrb.text = gameManager.getCollectedOrbs().ToString();
         totalOrb.text = gameManager.getTotalOrbs().ToString();
 	}
 	
     public void ReturnToMainMenu() {
-        gameManager.getAnalytics().LogEvent("Scorescreen","Score","Return to main menu",1);
+        gameManager.getAnalytics().LogEvent("Scorescreen","Action","Return to main menu",1);
         gameManager.ReturnToMain();
     }
 
     public void RestartGame() {
-        gameManager.getAnalytics().LogEvent("Scorescreen","Score","Restart game",1);
+        gameManager.getAnalytics().LogEvent("Scorescreen","Action","Restart game",1);
         gameManager.StartGame();
     }
 }

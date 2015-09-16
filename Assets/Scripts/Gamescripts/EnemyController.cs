@@ -144,6 +144,8 @@ public class EnemyController : MonoBehaviour {
         /* put it in front of the forground so it doesn't dissapear behind it */
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
 
+        gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Enemies Defeated",1);
+
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
 

@@ -71,6 +71,7 @@ public class PlayerController : MonoBehaviour {
             
             /* jump when input it detected, and player is currently touching the ground */
             if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
+                gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Jump",1);
                 myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
             }
             
@@ -81,7 +82,9 @@ public class PlayerController : MonoBehaviour {
                 
             /* else check if attack input is pressed and isBasicAttacking is false */
             } else if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
-                
+
+                gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Attack",1);
+
                 isBasicAttacking = true;
                 GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 1.8f, transform.position.y, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
                 currentSpeed = currentSpeed * 1.5f;
