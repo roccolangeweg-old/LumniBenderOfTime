@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlatformGenerator : MonoBehaviour {
+public class AreaGenerator : MonoBehaviour {
 
     public GameManager gameManager;
 
@@ -17,7 +17,7 @@ public class PlatformGenerator : MonoBehaviour {
 
     public GameObject caveObject;
 
-    private int levelPoint;
+    private float levelPoint;
     public int levelLength;
 
 	// Use this for initialization
@@ -46,19 +46,15 @@ public class PlatformGenerator : MonoBehaviour {
 
                 Instantiate (sections[sectionSelector], this.transform.position, this.transform.rotation);
 
+                levelPoint += currentSectionWidth; 
                 /* GameObject newPlatform = objectPool.getPooledObject();
                 newPlatform.transform.position = this.transform.position;
                 newPlatform.transform.rotation = this.transform.rotation;
                 newPlatform.SetActive(true); */
             } else {
-
                 /* generate a cave to transition to new level */
-                Instantiate (caveObject, this.transform.position, this.transform.rotation);
-
-
+                Instantiate (caveObject, new Vector3(this.transform.position.x + currentSectionWidth, this.transform.position.y + 5, this.transform.position.z), this.transform.rotation);
             }
-
         }
-
 	}
 }
