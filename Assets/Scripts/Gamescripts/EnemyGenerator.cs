@@ -35,7 +35,12 @@ public class EnemyGenerator : MonoBehaviour {
         yield return new WaitForSeconds(time);
 
         GameObject newEnemy = (GameObject) Instantiate(enemy);
-        newEnemy.transform.position = new Vector3(transform.position.x + 5, transform.position.y + 2, transform.position.z);
+
+        if (newEnemy.GetComponent<EnemyController>().isAerialType) {
+            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
+        } else {
+            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        }
         lastSpawnPosition = transform.position.x;
 
     }
