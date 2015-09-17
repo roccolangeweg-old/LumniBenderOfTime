@@ -25,6 +25,9 @@ public class CameraController : MonoBehaviour {
         player = FindObjectOfType<PlayerController>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
+        transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
+        lastPlayerPosition = player.transform.position;
+
         heartUIs = new List<Image>();
 
         lastPlayerHealth = player.getTotalHealth();

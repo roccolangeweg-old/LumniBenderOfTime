@@ -6,6 +6,7 @@ public class ParallaxController : MonoBehaviour {
 
     private List<ParallaxLayer> backgrounds;
     private GameObject gameCamera;
+    private GenerationPoint generationPoint;
 
     private Vector3 lastCameraPosition;
 
@@ -13,9 +14,8 @@ public class ParallaxController : MonoBehaviour {
 	void Start () {
 
         gameCamera = GameObject.Find("Main Camera");
+        generationPoint = FindObjectOfType<GenerationPoint>();
         backgrounds = new List<ParallaxLayer>();
-
-        lastCameraPosition = gameCamera.transform.position;
 
         for (var i=0; i < transform.childCount; i++) {
             ParallaxLayer layer = transform.GetChild(i).GetComponent<ParallaxLayer>();
@@ -30,14 +30,25 @@ public class ParallaxController : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 
-        float deltaPositionX = gameCamera.transform.position.x - lastCameraPosition.x;
-        float deltaPositionY = gameCamera.transform.position.y - lastCameraPosition.y;
+        if (lastCameraPosition.x != 0 || lastCameraPosition.y != 0) {
 
-        for(int i = 0; i < backgrounds.Count; i++) {
+            float deltaPositionX = gameCamera.transform.position.x - lastCameraPosition.x;
+            float deltaPositionY = gameCamera.transform.position.y - lastCameraPosition.y;
 
-            ParallaxLayer layer = backgrounds[i];
+            for(int i = 0; i < backgrounds.Count; i++) {
 
-            layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);
+                ParallaxLayer layer = backgrounds[i];
+
+                layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);
+
+                if(layer.isLastGenerated() && transform.position.x < generationPoint.transform.position.x) {
+                    layer.setLastGenerated(false);
+
+                    GameObject newLayer = (GameObject) Instantiate(layer.gameObject);
+                    newLayer.transform.position = new Vector3(layer.transform.position.x + 32, layer.transform.position.y, layer.transform.position.z);
+                }
+
+            }
 
         }
 
