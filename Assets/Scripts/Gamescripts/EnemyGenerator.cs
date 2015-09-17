@@ -13,28 +13,39 @@ public class EnemyGenerator : MonoBehaviour {
     public float distanceBetweenSpawn;
     private float lastSpawnPosition;
 
+    private bool spawnAllowed;
+
 	// Use this for initialization
 	void Start () {
+        spawnAllowed = true;
         InvokeRepeating("PrepareEnemySpawn", 2f, minSecondsBetweenEnemies);
 	}
 	
-    void PrepareEnemySpawn() {
+    private void PrepareEnemySpawn() {
 
         float timeTillSpawn = Random.Range(0f, 1f);
         GameObject enemy = enemyList[Random.Range(0, enemyList.Count)];
-        if (transform.position.x - lastSpawnPosition > distanceBetweenSpawn) {
+        if (transform.position.x - lastSpawnPosition > distanceBetweenSpawn && spawnAllowed) {
             StartCoroutine(spawnEnemy(enemy, timeTillSpawn));
         }
     }
 
-    IEnumerator spawnEnemy(GameObject enemy, float time) {
+    private IEnumerator spawnEnemy(GameObject enemy, float time) {
 
         yield return new WaitForSeconds(time);
 
         GameObject newEnemy = (GameObject) Instantiate(enemy);
-        newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+        newEnemy.transform.position = new Vector3(transform.position.x + 5, transform.position.y + 2, transform.position.z);
         lastSpawnPosition = transform.position.x;
 
+    }
+
+    public void loadEnemies(List<GameObject> enemies) {
+        enemyList = enemies;
+    }
+
+    public void SetSpawnAllowed(bool allowed) {
+        spawnAllowed = allowed;
     }
 
 

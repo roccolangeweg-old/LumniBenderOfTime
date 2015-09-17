@@ -1,18 +1,14 @@
 fileFormatVersion: 2
-guid: 7f15c49f59ff8ac428a7106a64d7b6ea
-timeCreated: 1442528616
+guid: 2c316fd7cadebaa429e19b42c7cfb1d5
+timeCreated: 1442519762
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Attack_sprite-v1-01_0
-    21300002: Attack_sprite-v1-01_1
-    21300004: Attack_sprite-v1-01_2
-    21300006: Attack_sprite-v1-01_3
-    21300008: Attack_sprite-v1-01_4
-    21300010: Attack_sprite-v1-01_5
-    21300012: Attack_sprite-v1-01_6
-    21300014: Attack_sprite-v1-01_7
-    21300016: Attack_sprite-v1-01_8
+    21300000: Lumni_Jump_0
+    21300002: Lumni_Jump_1
+    21300004: Lumni_Jump_2
+    21300006: Lumni_Jump_3
+    21300008: Lumni_Jump_4
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -36,7 +32,7 @@ TextureImporter:
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
   textureFormat: -3
-  maxTextureSize: 2048
+  maxTextureSize: 1024
   textureSettings:
     filterMode: -1
     aniso: 16
@@ -58,95 +54,55 @@ TextureImporter:
   buildTargetSettings: []
   spriteSheet:
     sprites:
-    - name: Attack_sprite-v1-01_0
+    - name: Lumni_Jump_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 128
+        y: 0
         width: 128
         height: 128
       alignment: 7
-      pivot: {x: .5, y: 0}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_1
+    - name: Lumni_Jump_1
       rect:
         serializedVersion: 2
         x: 128
-        y: 128
+        y: 0
         width: 128
         height: 128
       alignment: 7
-      pivot: {x: .5, y: 0}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_2
+    - name: Lumni_Jump_2
       rect:
         serializedVersion: 2
         x: 256
-        y: 128
+        y: 0
         width: 128
         height: 128
       alignment: 7
-      pivot: {x: .5, y: 0}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_3
+    - name: Lumni_Jump_3
       rect:
         serializedVersion: 2
         x: 384
-        y: 128
+        y: 0
         width: 128
         height: 128
       alignment: 7
-      pivot: {x: .5, y: 0}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_4
+    - name: Lumni_Jump_4
       rect:
         serializedVersion: 2
         x: 512
-        y: 128
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: .5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_5
-      rect:
-        serializedVersion: 2
-        x: 0
         y: 0
         width: 128
         height: 128
       alignment: 7
-      pivot: {x: .5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_6
-      rect:
-        serializedVersion: 2
-        x: 128
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: .5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_7
-      rect:
-        serializedVersion: 2
-        x: 256
-        y: 0
-        width: 128
-        height: 128
-      alignment: 7
-      pivot: {x: .5, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: Attack_sprite-v1-01_8
-      rect:
-        serializedVersion: 2
-        x: 384
-        y: 0
-        width: 128
-        height: 128
-      alignment: 0
-      pivot: {x: .5, y: .5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 

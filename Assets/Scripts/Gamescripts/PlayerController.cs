@@ -86,11 +86,11 @@ public class PlayerController : MonoBehaviour {
                 gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Attack",1);
 
                 isBasicAttacking = true;
-                GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 1.8f, transform.position.y, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,35)));
+                GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 1.8f, transform.position.y, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,0)));
                 currentSpeed = currentSpeed * 1.5f;
                 
                 /* update the attack scale */
-                loadedBasicAttack.transform.localScale = new Vector3(2.3f,2f,1f);
+                loadedBasicAttack.transform.localScale = new Vector3(2.5f,2.5f,1f);
             } 
 
             myAnimator.SetFloat("Speed", myRigidbody.velocity.x);

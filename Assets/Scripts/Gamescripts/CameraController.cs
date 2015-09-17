@@ -19,13 +19,19 @@ public class CameraController : MonoBehaviour {
     public int totalHearts;
     private float lastPlayerHealth;
 
+    void Awake() {
+
+        player = FindObjectOfType<PlayerController>();
+        transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
+
+    }
 
 	// Use this for initialization
 	void Start () {
-        player = FindObjectOfType<PlayerController>();
+
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-        transform.position = new Vector3(player.transform.position.x, player.transform.position.y, transform.position.z);
+
         lastPlayerPosition = player.transform.position;
 
         heartUIs = new List<Image>();

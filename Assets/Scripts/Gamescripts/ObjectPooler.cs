@@ -7,11 +7,12 @@ public class ObjectPooler : MonoBehaviour {
     public GameObject pooledObject;
     public int pooledAmount;
 
-    private List<GameObject> pooledObjects; 
+    private List<GameObject> pooledSections; 
+    private List<GameObject> pooledLayers;
 
 	// Use this for initialization
 	void Start () {
-        pooledObjects = new List<GameObject>();
+        pooledSections = new List<GameObject>();
 
         for (int i = 0; i < pooledAmount; i++) {
             createNewObject();
@@ -21,10 +22,10 @@ public class ObjectPooler : MonoBehaviour {
 	
     public GameObject getPooledObject() {
 
-        for (int i = 0; i < pooledObjects.Count; i++) {
+        for (int i = 0; i < pooledSections.Count; i++) {
 
-            if (!pooledObjects[i].activeInHierarchy) {
-                return pooledObjects[i];
+            if (!pooledSections[i].activeInHierarchy) {
+                return pooledSections[i];
             }
 
         }
@@ -37,7 +38,7 @@ public class ObjectPooler : MonoBehaviour {
     private GameObject createNewObject() {
         GameObject obj = (GameObject) Instantiate(pooledObject);
         obj.SetActive(false);
-        pooledObjects.Add(obj);
+        pooledSections.Add(obj);
 
         return obj;
 
