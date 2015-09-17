@@ -20,11 +20,14 @@ public class AreaGenerator : MonoBehaviour {
     private float levelPoint;
     public int levelLength;
 
+    private bool caveActive;
+
 	// Use this for initialization
 	void Start () {
 
         sectionWidths = new float[sections.Length];
         levelPoint = 0;
+        caveActive = false;
 
         for (int i = 0; i < sections.Length; i++) {
             sectionWidths[i] = sections[i].GetComponent<SectionController>().getSectionWidth();
@@ -51,9 +54,10 @@ public class AreaGenerator : MonoBehaviour {
                 newPlatform.transform.position = this.transform.position;
                 newPlatform.transform.rotation = this.transform.rotation;
                 newPlatform.SetActive(true); */
-            } else {
+            } else if( !caveActive ) {
                 /* generate a cave to transition to new level */
                 Instantiate (caveObject, new Vector3(this.transform.position.x + currentSectionWidth, this.transform.position.y + 5, this.transform.position.z), this.transform.rotation);
+                caveActive = true;
             }
         }
 	}
