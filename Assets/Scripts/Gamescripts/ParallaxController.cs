@@ -10,21 +10,14 @@ public class ParallaxController : MonoBehaviour {
 
     private Vector3 lastCameraPosition;
 
+    void Awake () {
+        backgrounds = new List<ParallaxLayer>();
+    }
+
 	// Use this for initialization
 	void Start () {
-
         gameCamera = GameObject.Find("Main Camera");
         generationPoint = FindObjectOfType<GenerationPoint>();
-        backgrounds = new List<ParallaxLayer>();
-
-        for (var i=0; i < transform.childCount; i++) {
-            ParallaxLayer layer = transform.GetChild(i).GetComponent<ParallaxLayer>();
-
-            if(layer != null) {
-                //layer.transform.position = lastCameraPosition;
-                backgrounds.Add(layer);
-            }
-        }
 	}
 	
 	// Update is called once per frame
@@ -41,7 +34,7 @@ public class ParallaxController : MonoBehaviour {
 
                 layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);
 
-                if(layer.isLastGenerated() && transform.position.x < generationPoint.transform.position.x) {
+                if(layer.isLastGenerated() && layer.transform.position.x < generationPoint.transform.position.x) {
                     layer.setLastGenerated(false);
 
                     GameObject newLayer = (GameObject) Instantiate(layer.gameObject);
@@ -55,4 +48,9 @@ public class ParallaxController : MonoBehaviour {
         lastCameraPosition = gameCamera.transform.position;
 
 	}
+
+    public void AddLayerToList(ParallaxLayer layer) {
+        Debug.Log(backgrounds);
+        backgrounds.Add(layer);
+    }
 }
