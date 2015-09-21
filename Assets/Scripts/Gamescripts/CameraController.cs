@@ -19,6 +19,10 @@ public class CameraController : MonoBehaviour {
     public int totalHearts;
     private float lastPlayerHealth;
 
+    private Text orbText;
+    private Text scoreText;
+    private Text comboText;
+
     void Awake() {
 
         player = FindObjectOfType<PlayerController>();
@@ -31,13 +35,16 @@ public class CameraController : MonoBehaviour {
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
-
         lastPlayerPosition = player.transform.position;
 
         heartUIs = new List<Image>();
 
         lastPlayerHealth = player.getTotalHealth();
         totalHearts = Mathf.CeilToInt(lastPlayerHealth);
+
+        orbText = GameObject.Find("OrbCounter").GetComponent<Text>();
+        scoreText = GameObject.Find("Score").GetComponent<Text>();
+        comboText = GameObject.Find("ComboText").GetComponent<Text>();
 
         for(int i = 0; i < totalHearts; i++) {
             GameObject newHeart = new GameObject("Heart");
@@ -68,8 +75,15 @@ public class CameraController : MonoBehaviour {
             updateHearts(lastPlayerHealth);
         }
 
-        Text orbText = HUDCanvas.GetComponentInChildren<Text>();
         orbText.text = gameManager.getCollectedOrbs().ToString();
+        scoreText.text = gameManager.getCurrentScore().ToString();
+
+        if (gameManager.RoundedCombo() >= 2) {
+            comboText.enabled = true;
+            comboText.text = gameManager.RoundedCombo().ToString() + "x Combo";
+        } else {
+            comboText.enabled = false;
+        }
 
 	}
 

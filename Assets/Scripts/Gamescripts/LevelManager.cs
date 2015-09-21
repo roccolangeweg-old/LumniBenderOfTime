@@ -6,6 +6,8 @@ public class LevelManager : MonoBehaviour {
 
     public List<LevelSet> levels;
 
+    private PlayerController player;
+
     private EnemyGenerator enemyGenerator;
     private AreaGenerator areaGenerator;
     private ParallaxController backgroundGenerator;
@@ -21,6 +23,7 @@ public class LevelManager : MonoBehaviour {
         enemyGenerator = FindObjectOfType<EnemyGenerator>();
         areaGenerator = FindObjectOfType<AreaGenerator>();
         backgroundGenerator = FindObjectOfType<ParallaxController>();
+        player = FindObjectOfType<PlayerController>();
 
         Load(levels[defaultLevelNo]);
     }
@@ -46,6 +49,7 @@ public class LevelManager : MonoBehaviour {
 
         Load(levels[Random.Range(0, levels.Count)]);
         SetSpawns(true);
+        player.updateCurrentSpeed(1.05f);
     }
 
     private void SetSpawns(bool spawnAllowed) {

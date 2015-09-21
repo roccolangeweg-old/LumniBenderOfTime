@@ -75,11 +75,8 @@ public class EnemyController : MonoBehaviour {
                 GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
 
-                if(orbsRewarded > 0) {
-                    gameManager.addOrbs(orbsRewarded);
-                }
-
-
+                gameManager.addOrbs(orbsRewarded);
+                gameManager.addDefeatedEnemy();
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */
                 if (isAerialType) {

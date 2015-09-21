@@ -64,15 +64,16 @@ public class PlayerController : MonoBehaviour {
             
             /* check if player is allowed to move */
             if (!isKnockedBack) {
-                myRigidbody.velocity = new Vector2(currentSpeed, myRigidbody.velocity.y);
+                myRigidbody.velocity = new Vector2(currentSpeed * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
+                gameManager.addScore(0.1f);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
             }
             
             /* jump when input it detected, and player is currently touching the ground */
             if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
-                gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Jump",1);
                 myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+                gameManager.addJump();
             }
             
             /* check if animation for attack has finished */
@@ -107,6 +108,7 @@ public class PlayerController : MonoBehaviour {
         if (other.gameObject.tag == "Enemy" && !isBasicAttacking) {
             currentHealth-=0.5f;
             knockPlayerBack();
+            gameManager.ResetCombo();
         }
         
     }
@@ -168,6 +170,10 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorClipInfo(0).Length);
 
         gameManager.playerDied();
+    }
+
+    public void updateCurrentSpeed(float value) {
+        currentSpeed = currentSpeed * value;
     }
     
 }

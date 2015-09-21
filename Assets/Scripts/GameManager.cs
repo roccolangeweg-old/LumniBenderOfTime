@@ -3,9 +3,10 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-    public static GameManager managerInstance = null;
+    public static GameManager gmInstance = null;
 
     private GoogleAnalyticsV3 GA3;
+    private PlayerController player;
 
     private bool paused;
     private float healthMultiplier;
@@ -16,19 +17,40 @@ public class GameManager : MonoBehaviour {
     private int collectedOrbs;
     private int totalOrbs;
 
+    private int currentJumps;
+    private int totalJumps;
+
+    private float currentCombo;
+    private int highestCombo;
+    private int currentHighestCombo;
+
+    private int totalEnemiesDefeated;
+    private int enemiesDefeated;
+
     private int totalRelics;
     private int collectedRelics;
+
+    private int totalDistance;
+    private int currentDistance;
+    private float startingDistance;
+
+    private float currentScore;
+    private int highScore;
+
+    public float multiplierPercentage;
    
     //Awake is always called before any Start functions
     void Awake() {
         /* check if gamemanager already exists */
-        if (managerInstance == null) {
-            managerInstance = this;
-        } else if (managerInstance != this) {
+        if (gmInstance == null) {
+            gmInstance = this;
+        } else if (gmInstance != this) {
             /* enforce Singleton, only 1 game manager may exist */
             Destroy(gameObject);
         }    
+
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
+
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
     }
@@ -39,6 +61,10 @@ public class GameManager : MonoBehaviour {
 
         totalOrbs = PlayerPrefs.GetInt("Orbs");
         totalRelics = PlayerPrefs.GetInt("Relics");
+        totalDistance = PlayerPrefs.GetInt("TotalDistance");
+        highestCombo = PlayerPrefs.GetInt("HighestCombo");
+        totalEnemiesDefeated = PlayerPrefs.GetInt("EnemiesDefeated");
+        totalJumps = PlayerPrefs.GetInt("Jumps");
 	}
 
     void OnLevelWasLoaded() {
@@ -49,14 +75,27 @@ public class GameManager : MonoBehaviour {
         if (Application.loadedLevelName == "GameScene") {
 
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
+            player = FindObjectOfType<PlayerController>();
+            startingDistance = player.transform.position.x;
+
             collectedOrbs = 0;
             collectedRelics = 0;
 
+            currentJumps = 0;
+            currentCombo = 1;
+            currentHighestCombo = 0;
+
+            enemiesDefeated = 0;
+            currentScore = 0;
+
+
         } else if (Application.loadedLevelName == "ScoreScene") {
 
-            if (managerInstance == this) {
+            if (gmInstance == this) {
+
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
+
                 PlayerPrefs.SetInt("Orbs", totalOrbs);
                 PlayerPrefs.SetInt("Relics", totalRelics);
 
@@ -84,6 +123,7 @@ public class GameManager : MonoBehaviour {
 	}
 
     public void playerDied() {
+        currentDistance = (int) Mathf.Round(player.transform.position.x - startingDistance);
         Time.timeScale = 1;
         Application.LoadLevel("ScoreScene");
     }
@@ -92,16 +132,72 @@ public class GameManager : MonoBehaviour {
         return healthMultiplier;
     }
 
+    /* stat update methods */
     public void addOrbs(int amount) {
         collectedOrbs += amount;
+        addScore(amount);
     }
 
+    public void addScore(float amount) {
+        if (!paused) {
+            currentScore += amount * ScoreMultiplier();
+        }
+    }
+
+    public void addDefeatedEnemy() {
+        enemiesDefeated++;
+
+        UpdateComboMeter();
+    }
+
+    public void addJump() {
+        currentJumps++;
+    }
+
+    /* get stats for this run */
     public int getCollectedOrbs() {
         return collectedOrbs;
     }
 
+    public int getCurrentDistance() {
+        return currentDistance;
+    }
+
+    public int getCurrentHighestCombo() {
+        return currentHighestCombo;
+    }
+
+    public int getCurrentJumps() {
+        return currentJumps;
+    }
+
+    public int getEnemiesDefeated() {
+        return enemiesDefeated;
+    }
+
+    public int getCurrentScore() {
+        return Mathf.RoundToInt(currentScore);
+    }
+
+    /* totals for stats screen */
     public int getTotalOrbs() {
         return totalOrbs;
+    }
+
+    public int getTotalDistance() {
+        return totalDistance;
+    }
+
+    public int getHighestCombo() {
+        return highestCombo;
+    }
+
+    public int getTotalJumps() {
+        return totalJumps;
+    }
+
+    public int getTotalEnemiesDefeated() {
+        return totalEnemiesDefeated;
     }
 
     public void UpdatePauseState() {
@@ -136,7 +232,39 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    private float ScoreMultiplier() {
+        return Mathf.Floor(currentCombo) * multiplierPercentage;
+    }
+
+    private void UpdateComboMeter() {
+        currentCombo += 1 / (RoundedCombo() + 1);
+
+        if (RoundedCombo() > currentHighestCombo) {
+            currentHighestCombo = (int) RoundedCombo();
+        }
+    
+        StartCoroutine(StartComboExpire());
+    }
+
+    public float RoundedCombo() {
+        return Mathf.Floor(currentCombo);
+    }
+
+    public void ResetCombo() {
+        currentCombo = 1;
+    }
+
     public GoogleAnalyticsV3 getAnalytics() {
         return GA3;
+    }
+
+    private IEnumerator StartComboExpire() {
+        float currentComboStart = currentCombo;
+
+        yield return new WaitForSeconds(5);
+
+        if (currentCombo == currentComboStart) {
+            currentCombo = 1;
+        }
     }
 }
