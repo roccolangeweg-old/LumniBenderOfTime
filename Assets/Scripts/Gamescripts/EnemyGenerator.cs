@@ -37,7 +37,7 @@ public class EnemyGenerator : MonoBehaviour {
         GameObject newEnemy = (GameObject) Instantiate(enemy);
 
         if (newEnemy.GetComponent<EnemyController>().isAerialType) {
-            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + Random.Range(0,3), transform.position.z);
+            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
         } else {
             newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
         }

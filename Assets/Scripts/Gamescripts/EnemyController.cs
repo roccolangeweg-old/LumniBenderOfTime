@@ -4,6 +4,9 @@ using System.Collections;
 public class EnemyController : MonoBehaviour {
 
     private GameManager gameManager;
+    private PlayerController player;
+
+    private GameObject destructionPoint;
 
     public int orbsRewarded;
     public int baseHealth;
@@ -11,6 +14,7 @@ public class EnemyController : MonoBehaviour {
     public float moveSpeed;
 
     private bool isAlive;
+    private bool isAttacking;
 
     private Vector3 basePosition;
     public float flyingSwing;
@@ -32,7 +36,14 @@ public class EnemyController : MonoBehaviour {
 	void Start () {
         gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
         currentHealth = baseHealth;
+
+        destructionPoint = GameObject.Find("DestructionPoint");
+
+        player = FindObjectOfType<PlayerController>();
+
         isAlive = true;
+        isAttacking = false;
+
         myRigidbody = this.GetComponent<Rigidbody2D>();
         myAnimator = this.GetComponent<Animator>();
         basePosition = transform.position;
@@ -41,12 +52,16 @@ public class EnemyController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        if (transform.position.x < destructionPoint.transform.position.x) {
+            Destroy(gameObject);
+        }
+
         if (isAlive) {
 
             /* check if knockback is done */
             knockbackTime -= Time.deltaTime;
 
-            if (!isKnockedBack) {
+            if (!isKnockedBack && !isAttacking) {
                 myRigidbody.velocity = new Vector2(-moveSpeed, myRigidbody.velocity.y);
             } else if (isKnockedBack && knockbackTime <= 0) {      
                 isKnockedBack = false;
@@ -54,9 +69,17 @@ public class EnemyController : MonoBehaviour {
 
             /* let aerial enemies fly up & down */
             if (isAerialType) {
-                if (transform.position.y < basePosition.y - flyingSwing) {
-                    myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, flyingSwing * 3);
-                }
+                if(player.transform.position.x + 6.5 >= transform.position.x && transform.position.x > player.transform.position.x + 0.5 && !isAttacking) {
+					isAttacking = true;
+					MoveTowardsPlayer();
+				} else if (transform.position.x < player.transform.position.x + 1 && isAttacking) {
+					isAttacking = false;
+                    MoveBackToPosition();
+				}
+				
+				if(transform.position.y < basePosition.y && !isAttacking) {
+					myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, flyingSwing * 3);
+				}
             }
 
             if (currentHealth <= 0) {
@@ -90,11 +113,13 @@ public class EnemyController : MonoBehaviour {
             myAnimator.SetBool("Alive", isAlive);
             myAnimator.SetFloat("Speed", Mathf.Abs(myRigidbody.velocity.x));
             myAnimator.SetBool("Knockback", isKnockedBack);
+            myAnimator.SetBool("Attacking", isAttacking);
 
         } else {
 
             /* make sure the enemy is not going the wrong way */
             if(myRigidbody.velocity.x < 0) {
+                myRigidbody.AddForce(new Vector2(0,0));
                 myRigidbody.velocity = new Vector2(Mathf.Abs(myRigidbody.velocity.x), myRigidbody.velocity.y);
             }
                
@@ -112,7 +137,7 @@ public class EnemyController : MonoBehaviour {
 
             isKnockedBack = true;
             knockbackTime = knockbackLength;
-            myRigidbody.velocity = new Vector2(6 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
+            myRigidbody.velocity = new Vector2(4 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
         }
     }
 
@@ -153,5 +178,17 @@ public class EnemyController : MonoBehaviour {
         yield return new WaitForSeconds(time);
         StartCoroutine(destroyRemains());
     }
+
+	private void MoveTowardsPlayer() {
+        Vector2 direction = new Vector2(player.transform.position.x + 2 - transform.position.x, -4.5f);
+        myRigidbody.AddRelativeForce(direction.normalized * 5000, ForceMode2D.Force);
+
+	}
+
+    private void MoveBackToPosition() {
+        Vector2 direction = new Vector2(transform.position.x - 5, basePosition.y);
+        myRigidbody.AddForce(direction.normalized * 5000, ForceMode2D.Force);
+    }
+
 
 }
