@@ -107,12 +107,12 @@ public class EnemyController : MonoBehaviour {
                 GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
 
-                gameManager.addOrbs(orbsRewarded);
+                gameManager.addOrbs(Random.Range(Mathf.FloorToInt(orbsRewarded * 0.50f),orbsRewarded));
                 gameManager.addDefeatedEnemy();
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */
                 if (isAerialType) {
-                    this.myRigidbody.velocity = new Vector2(8, -3);      
+                    this.myRigidbody.velocity = new Vector2(10, -3);      
                 } else {
                     this.myRigidbody.velocity = new Vector2(8, 6);
                 }
