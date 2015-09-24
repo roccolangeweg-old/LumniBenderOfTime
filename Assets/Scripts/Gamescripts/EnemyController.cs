@@ -28,6 +28,7 @@ public class EnemyController : MonoBehaviour {
 
     private Rigidbody2D myRigidbody;
     private Animator myAnimator;
+    private Collider2D myCollider;
 
     public PhysicsMaterial2D deathMaterial;
     public GameObject explosion;
@@ -45,8 +46,14 @@ public class EnemyController : MonoBehaviour {
         isAttacking = false;
 
         myRigidbody = this.GetComponent<Rigidbody2D>();
-        myAnimator = this.GetComponent<Animator>();
+        myAnimator = this.GetComponentInChildren<Animator>();
+        myCollider = this.GetComponentInChildren<Collider2D>();
+
         basePosition = transform.position;
+
+        if (isAerialType) {
+            myRigidbody.isKinematic = true;
+        }
 	}
 	
 	// Update is called once per frame
@@ -61,25 +68,25 @@ public class EnemyController : MonoBehaviour {
             /* check if knockback is done */
             knockbackTime -= Time.deltaTime;
 
+            if(isAerialType) {
+                if(player.transform.position.x + 5 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
+                    isAttacking = true;
+                }
+            } else {
+                if(player.transform.position.x + 3 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
+                    isAttacking = true;
+                }
+            }
+
+            
             if (!isKnockedBack && !isAttacking) {
                 myRigidbody.velocity = new Vector2(-moveSpeed, myRigidbody.velocity.y);
             } else if (isKnockedBack && knockbackTime <= 0) {      
                 isKnockedBack = false;
-            }
-
-            /* let aerial enemies fly up & down */
-            if (isAerialType) {
-                if(player.transform.position.x + 6.5 >= transform.position.x && transform.position.x > player.transform.position.x + 0.5 && !isAttacking) {
-					isAttacking = true;
-					MoveTowardsPlayer();
-				} else if (transform.position.x < player.transform.position.x + 1 && isAttacking) {
-					isAttacking = false;
-                    MoveBackToPosition();
-				}
-				
-				if(transform.position.y < basePosition.y && !isAttacking) {
-					myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, flyingSwing * 3);
-				}
+                myRigidbody.isKinematic = true;
+            } else if (isAttacking && myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
+                transform.position = myAnimator.gameObject.transform.position;
+                isAttacking = false;
             }
 
             if (currentHealth <= 0) {
@@ -89,7 +96,9 @@ public class EnemyController : MonoBehaviour {
 
                 /* prepare enemy for becoming a projectile */
                 gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
-                GetComponent<Collider2D>().sharedMaterial = deathMaterial;
+                transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("DeadEnemies");
+
+                myCollider.sharedMaterial = deathMaterial;
 
                 /* start using the enemy as projectile and destroy it afterwards */
                 StartCoroutine(DestroyEnemyRoutine(1));
@@ -122,38 +131,11 @@ public class EnemyController : MonoBehaviour {
                 myRigidbody.AddForce(new Vector2(0,0));
                 myRigidbody.velocity = new Vector2(Mathf.Abs(myRigidbody.velocity.x), myRigidbody.velocity.y);
             }
-               
-            /* spin the enemy remains for FX */
-            transform.Rotate (0,0,270 * Time.deltaTime);
+
+            transform.Rotate (0,0,360 * Time.deltaTime);
 
         }
 	}
-
-    void OnTriggerEnter2D(Collider2D other) {
-
-        /* check if we hit a player attack */
-        if (other.gameObject.tag == "Attack") {
-            currentHealth-=1;
-
-            isKnockedBack = true;
-            knockbackTime = knockbackLength;
-            myRigidbody.velocity = new Vector2(4 * knockbackAmplifier * 1f, 5 * knockbackAmplifier * 0.3f);
-        }
-    }
-
-    void OnCollisionEnter2D(Collision2D other) {
-
-        /* check if we hit an dead enemy projectile */
-        if (other.gameObject.tag == "Enemy" && !other.gameObject.GetComponent<EnemyController>().isEnemyAlive()) {
-            currentHealth-=1;
-            isKnockedBack = true;
-            knockbackTime = knockbackLength;
-            myRigidbody.velocity = new Vector2(2,2);
-
-            /* destroy the actual enemy - drop it off the screen */
-            StartCoroutine(other.gameObject.GetComponent<EnemyController>().destroyRemains());
-        }
-    }
 
     public bool isEnemyAlive() {
         return isAlive;
@@ -161,7 +143,7 @@ public class EnemyController : MonoBehaviour {
 
     public IEnumerator destroyRemains() {
         /* allow it to ignore collisions from now on */
-        GetComponent<Collider2D>().isTrigger = true;
+        myCollider.isTrigger = true;
 
         /* put it in front of the forground so it doesn't dissapear behind it */
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
@@ -179,16 +161,18 @@ public class EnemyController : MonoBehaviour {
         StartCoroutine(destroyRemains());
     }
 
-	private void MoveTowardsPlayer() {
-        Vector2 direction = new Vector2(player.transform.position.x + 2 - transform.position.x, -4.5f);
-        myRigidbody.AddRelativeForce(direction.normalized * 5000, ForceMode2D.Force);
+    public void TakeDamage(int damage) {
+        transform.position = myCollider.gameObject.transform.position;
+        myRigidbody.isKinematic = false;
 
-	}
+        currentHealth -= damage;
+        isKnockedBack = true;
+        knockbackTime = knockbackLength;
 
-    private void MoveBackToPosition() {
-        Vector2 direction = new Vector2(transform.position.x - 5, basePosition.y);
-        myRigidbody.AddForce(direction.normalized * 5000, ForceMode2D.Force);
+        myRigidbody.velocity = new Vector2(8,2);
+
+
     }
-
-
+    
+    
 }

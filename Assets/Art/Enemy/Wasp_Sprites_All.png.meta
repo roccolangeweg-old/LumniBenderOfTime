@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 63e9508484ddfe04182e6f6bfe25d744
-timeCreated: 1441717619
+timeCreated: 1443090644
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -70,8 +70,8 @@ TextureImporter:
         y: 384
         width: 128
         height: 128
-      alignment: 7
-      pivot: {x: 0, y: 0}
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_1
       rect:
@@ -80,7 +80,7 @@ TextureImporter:
         y: 384
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_2
@@ -90,7 +90,7 @@ TextureImporter:
         y: 384
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_3
@@ -100,7 +100,7 @@ TextureImporter:
         y: 384
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_4
@@ -110,7 +110,7 @@ TextureImporter:
         y: 256
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_5
@@ -120,7 +120,7 @@ TextureImporter:
         y: 256
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_6
@@ -130,7 +130,7 @@ TextureImporter:
         y: 256
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_7
@@ -140,7 +140,7 @@ TextureImporter:
         y: 256
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_8
@@ -150,7 +150,7 @@ TextureImporter:
         y: 128
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_9
@@ -160,7 +160,7 @@ TextureImporter:
         y: 128
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_10
@@ -170,7 +170,7 @@ TextureImporter:
         y: 128
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_11
@@ -180,7 +180,7 @@ TextureImporter:
         y: 128
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_12
@@ -190,7 +190,7 @@ TextureImporter:
         y: 0
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Wasp_Sprites_All_13
@@ -200,7 +200,7 @@ TextureImporter:
         y: 0
         width: 128
         height: 128
-      alignment: 7
+      alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 

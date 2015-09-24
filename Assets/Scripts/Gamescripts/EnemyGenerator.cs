@@ -39,7 +39,7 @@ public class EnemyGenerator : MonoBehaviour {
         if (newEnemy.GetComponent<EnemyController>().isAerialType) {
             newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
         } else {
-            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
         }
         lastSpawnPosition = transform.position.x;
 

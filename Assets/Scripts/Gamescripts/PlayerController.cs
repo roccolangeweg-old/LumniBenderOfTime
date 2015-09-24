@@ -84,8 +84,6 @@ public class PlayerController : MonoBehaviour {
             /* else check if attack input is pressed and isBasicAttacking is false */
             } else if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
 
-                gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Attack",1);
-
                 isBasicAttacking = true;
                 GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.5f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,0)));
                 currentSpeed = currentSpeed * 1.5f;
