@@ -47,7 +47,7 @@ public class LevelManager : MonoBehaviour {
             nextLevel = levels [Random.Range(0, levels.Count)];
         }
 
-        Load(levels[Random.Range(0, levels.Count)]);
+        Load(nextLevel);
         SetSpawns(true);
         player.updateCurrentSpeed(1.05f);
     }
