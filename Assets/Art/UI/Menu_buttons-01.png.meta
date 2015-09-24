@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: fcfd4cc236f20e345930f495e31a237f
-timeCreated: 1443097755
+timeCreated: 1443115788
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,6 +9,11 @@ TextureImporter:
     21300004: Menu_buttons-01_2
     21300006: Menu_buttons-01_3
     21300008: Menu_buttons-01_4
+    21300010: Menu_buttons-01_5
+    21300012: Menu_buttons-01_6
+    21300014: Menu_buttons-01_7
+    21300016: Menu_buttons-01_8
+    21300018: Menu_buttons-01_9
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -58,7 +63,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -68,7 +73,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -78,7 +83,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -88,13 +93,63 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_4
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 384
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_6
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_7
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_8
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_9
       rect:
         serializedVersion: 2
         x: 1024

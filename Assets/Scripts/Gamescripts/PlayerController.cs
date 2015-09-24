@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour {
 
     public float baseSpeed;
     private float currentSpeed;
+    private float attackSpeedMultiplier;
 
     public float knockbackAmplifier;
     public float knockbackLength;
@@ -45,6 +46,8 @@ public class PlayerController : MonoBehaviour {
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
 
+        attackSpeedMultiplier = 1;
+
         playerDied = false;
 
         InvokeRepeating("ChargeTimebend", 0f, 0.25f);
@@ -52,47 +55,34 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() { 
+
         grounded = Physics2D.IsTouchingLayers(myCollider, groundLayer);
         knockbackTime -= Time.deltaTime;
 
         /* check if player is still alive */
         if (currentHealth <= 0) {
+
             if(!playerDied) {
-                StartCoroutine(startPlayerDeathAnimation());
+                StartCoroutine(StartPlayerDeathAnimation());
             }
+
         } else {
             
             /* check if player is allowed to move */
             if (!isKnockedBack) {
-                myRigidbody.velocity = new Vector2(currentSpeed * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
+                myRigidbody.velocity = new Vector2(currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
                 gameManager.addScore(0.1f);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
             }
             
-            /* jump when input it detected, and player is currently touching the ground */
-            if ((Input.GetKeyDown(KeyCode.Space) || (Input.touchCount > 0 && Input.GetTouch(0).position.x < Screen.width/2)) && grounded) {
-                myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
-                gameManager.addJump();
-            }
-            
             /* check if animation for attack has finished */
             if (myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Player_BasicAttack") && myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
                 isBasicAttacking = false;
-                currentSpeed = this.baseSpeed;
-                
-            /* else check if attack input is pressed and isBasicAttacking is false */
-            } else if ((Input.GetMouseButtonDown(1) || (Input.touchCount > 0 && Input.GetTouch(0).position.x > Screen.width/2)) && !isBasicAttacking) {
-
-                isBasicAttacking = true;
-                GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.5f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0,0,0)));
-                currentSpeed = currentSpeed * 1.5f;
-                
-                /* update the attack scale */
-                loadedBasicAttack.transform.parent = this.gameObject.transform;
-                loadedBasicAttack.transform.localScale = new Vector3(2f,2f,1f);
-            } 
-
+                attackSpeedMultiplier = 1;
+            }
+    
+            /* set animator values */
             myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
             myAnimator.SetBool("BasicAttacking", isBasicAttacking);
             myAnimator.SetBool("Grounded", grounded);
@@ -130,6 +120,36 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void UpdateCurrentSpeed(float value) {
+        currentSpeed = currentSpeed * value;
+    }
+
+    public void Jump() {
+
+        /* check if player is on the ground, then jump */
+        if (grounded) {
+            myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+            gameManager.addJump();
+        }
+
+    }
+
+    public void Attack() {
+
+        /* check if attack is possible, then attack */
+        if (!isBasicAttacking) {
+            isBasicAttacking = true;
+            GameObject loadedBasicAttack = (GameObject)Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
+            attackSpeedMultiplier = 1.5f;
+            
+            /* update the attack scale */
+            loadedBasicAttack.transform.parent = this.gameObject.transform;
+            loadedBasicAttack.transform.localScale = new Vector3(2f, 2f, 1f);
+
+        }
+
+    }
+
     /* CUSTOM PRIVATE FUNCTIONS */
     private void ChargeTimebend() {
         if (!timebendReady && !timebendActive) {
@@ -158,7 +178,7 @@ public class PlayerController : MonoBehaviour {
         myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
     }
 
-    private IEnumerator startPlayerDeathAnimation() {
+    private IEnumerator StartPlayerDeathAnimation() {
         playerDied = true;
         myAnimator.SetTrigger("Death");
         gameObject.layer = LayerMask.NameToLayer("DeathPlayer");
@@ -168,10 +188,6 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorClipInfo(0).Length);
 
         gameManager.playerDied();
-    }
-
-    public void updateCurrentSpeed(float value) {
-        currentSpeed = currentSpeed * value;
     }
     
 }

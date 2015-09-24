@@ -49,7 +49,8 @@ public class LevelManager : MonoBehaviour {
 
         Load(nextLevel);
         SetSpawns(true);
-        player.updateCurrentSpeed(1.05f);
+
+        player.UpdateCurrentSpeed(1.05f);
     }
 
     private void SetSpawns(bool spawnAllowed) {

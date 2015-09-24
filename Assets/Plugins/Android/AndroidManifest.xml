@@ -26,8 +26,6 @@
     <activity android:name="com.facebook.unity.AppInviteDialogActivity" android:exported="true">
     </activity>
     <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="170688799936108" />
-    <activity android:name="com.facebook.FacebookContentProvider" android:authorities="com.facebook.app.FacebookContentProvider170688799936108" android:exported="true">
-    </activity>
     <activity android:name="com.facebook.FacebookActivity" android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation" android:label="@string/app_name" android:theme="@android:style/Theme.Translucent.NoTitleBar">
     </activity>
     <activity android:name="com.facebook.FacebookContentProvider" android:authorities="com.facebook.app.FacebookContentProvider170688799936108" android:exported="true">

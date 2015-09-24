@@ -146,7 +146,6 @@ public class GameManager : MonoBehaviour {
 
     public void addDefeatedEnemy() {
         enemiesDefeated++;
-
         UpdateComboMeter();
     }
 
