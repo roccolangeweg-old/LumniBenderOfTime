@@ -95,9 +95,31 @@ public class GameManager : MonoBehaviour {
 
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
+                totalJumps += currentJumps;
+                totalEnemiesDefeated += enemiesDefeated;
+                totalDistance += currentDistance;
+
+                if(Mathf.RoundToInt(currentScore) > highScore) {
+                    highScore = Mathf.RoundToInt(currentScore);
+                }
+
+                GA3.LogEvent("Stats","All","Score", Mathf.RoundToInt(currentScore) );
+                GA3.LogEvent("Stats","All","Orbs Collected",collectedOrbs);
+                GA3.LogEvent("Stats","All","Relics Collected",collectedRelics);
+                GA3.LogEvent("Stats","All","Jump Count", currentJumps);
+                GA3.LogEvent("Stats","All","Defeated Enemies", enemiesDefeated);
+                GA3.LogEvent("Stats","All","Distance Travelled", currentDistance);
+
+                if (highestCombo < currentHighestCombo) {
+                    highestCombo = currentHighestCombo;
+                }
 
                 PlayerPrefs.SetInt("Orbs", totalOrbs);
                 PlayerPrefs.SetInt("Relics", totalRelics);
+                PlayerPrefs.SetInt("HighestCombo", highestCombo);
+                PlayerPrefs.SetInt("TotalEnemiesDefeated", totalEnemiesDefeated);
+                PlayerPrefs.SetInt("TotalDistance", totalDistance);
+                PlayerPrefs.SetInt("Highscore", highScore);
 
                 PlayerPrefs.Save();
             }
@@ -107,9 +129,9 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
-        if (Application.loadedLevelName == "MainScene" && Input.GetMouseButtonDown(0)) {
-            StartGame();
-        }
+        //if (Application.loadedLevelName == "MainScene" && Input.GetMouseButtonDown(0)) {
+            //StartGame();
+        //}
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainScene") {

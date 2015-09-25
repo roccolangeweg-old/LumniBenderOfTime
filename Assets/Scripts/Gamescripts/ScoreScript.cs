@@ -22,7 +22,6 @@ public class ScoreScript : MonoBehaviour {
 	void Start () {
 
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        gameManager.getAnalytics().LogEvent("Stats","Score","Orbs Collected",gameManager.getCollectedOrbs());
 
         previousOrbs = gameManager.getTotalOrbs() - gameManager.getCollectedOrbs();    
 
