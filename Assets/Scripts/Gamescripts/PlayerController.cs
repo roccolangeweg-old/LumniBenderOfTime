@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+using System.Collections.Generic;
+
 public class PlayerController : MonoBehaviour {
 
     private GameManager gameManager;
@@ -32,10 +34,6 @@ public class PlayerController : MonoBehaviour {
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
-    private bool timebendActive;
-    private bool timebendReady;
-    private int timebendCharge;
-
 
     /* TimeBend vars */
     private int defaultTBTargets;
@@ -53,11 +51,8 @@ public class PlayerController : MonoBehaviour {
         myAnimator = GetComponent<Animator>();
 
         attackSpeedMultiplier = 1;
-        maxTBTargets = gameManager.MaxTBTargets(defaultTBTargets);
 
         playerDied = false;
-
-        InvokeRepeating("ChargeTimebend", 0f, 0.25f);
 	}
 
     void Update() {
@@ -91,6 +86,7 @@ public class PlayerController : MonoBehaviour {
                 gameManager.addScore(0.1f);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
+                gameObject.layer = LayerMask.NameToLayer("Player");
             }
             
             /* check if animation for attack has finished */
@@ -128,9 +124,12 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Timebend() {
+        gameManager.GetTBController().EnableTimebendMode();
+    }
 
-        StartCoroutine(gameManager.UpdateTimescale(0.00001f));
-        currentTBTargets = maxTBTargets;
+    public void TimebendAttack(List<GameObject> targets) {
+
+        StartCoroutine(AttackTargets(targets));
 
     }
 
@@ -170,6 +169,8 @@ public class PlayerController : MonoBehaviour {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
         myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
+        gameObject.layer = LayerMask.NameToLayer("HurtPlayer");
+           
     }
 
     private IEnumerator StartPlayerDeathAnimation() {
@@ -182,6 +183,16 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorClipInfo(0).Length);
 
         gameManager.playerDied();
+    }
+
+    private IEnumerator AttackTargets(List<GameObject> targets) {
+
+        for (int i = 0; i < targets.Count; i++) {
+            this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y, transform.position.z);
+            yield return new WaitForSeconds(1 * Time.timeScale);
+        }
+
+        gameManager.GetTBController().DisableTimebendMode();
     }
     
 }

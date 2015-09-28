@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour {
     private GoogleAnalyticsV3 GA3;
     private PlayerController player;
 
+    private TimebendController tbController;
+
     private bool paused;
     private float healthMultiplier;
 
@@ -75,6 +77,7 @@ public class GameManager : MonoBehaviour {
         totalJumps = PlayerPrefs.GetInt("Jumps");
 
         player = FindObjectOfType<PlayerController>();
+        tbController = FindObjectOfType<TimebendController>();
 	}
 
     void OnLevelWasLoaded() {
@@ -86,6 +89,8 @@ public class GameManager : MonoBehaviour {
 
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
             player = FindObjectOfType<PlayerController>();
+            tbController = FindObjectOfType<TimebendController>();
+
             startingDistance = player.transform.position.x;
 
             collectedOrbs = 0;
@@ -298,10 +303,10 @@ public class GameManager : MonoBehaviour {
     }
 
 	public void ShowAd() {
-        if (Random.Range(1, 5) == 1) {
+        if (Random.Range(1, 4) == 1) {
 
             if (Advertisement.IsReady()) {
-                Advertisement.Show();
+                //Advertisement.Show();
             }
 
         }
@@ -312,13 +317,13 @@ public class GameManager : MonoBehaviour {
     }
 
     private void UpdateComboMeter() {
+
         currentCombo += 1 / (RoundedCombo() + 1);
 
         if (RoundedCombo() > currentHighestCombo) {
             currentHighestCombo = (int) RoundedCombo();
         }
     
-        StartCoroutine(StartComboExpire());
     }
 
     public float RoundedCombo() {
@@ -329,18 +334,8 @@ public class GameManager : MonoBehaviour {
         currentCombo = 1;
     }
 
-    public GoogleAnalyticsV3 getAnalytics() {
-        return GA3;
-    }
-
-    private IEnumerator StartComboExpire() {
-        float currentComboStart = currentCombo;
-
-        yield return new WaitForSeconds(5);
-
-        if (currentCombo == currentComboStart) {
-            currentCombo = 1;
-        }
+    public TimebendController GetTBController() {
+        return tbController;
     }
 
 }

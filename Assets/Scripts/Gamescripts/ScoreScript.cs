@@ -44,12 +44,10 @@ public class ScoreScript : MonoBehaviour {
     }
 	
     public void ReturnToMainMenu() {
-        gameManager.getAnalytics().LogEvent("Scorescreen","Action","Return to main menu",1);
         gameManager.ReturnToMain();
     }
 
     public void RestartGame() {
-        gameManager.getAnalytics().LogEvent("Scorescreen","Action","Restart game",1);
         gameManager.StartGame();
     }
 }

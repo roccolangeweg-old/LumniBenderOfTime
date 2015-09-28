@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
 
 public class HUDController : MonoBehaviour {
 
@@ -16,12 +15,9 @@ public class HUDController : MonoBehaviour {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = FindObjectOfType<PlayerController>();
 
-        StartCoroutine(RemoveControlsAfterStart());
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+        if (Application.loadedLevelName == "GameScene") {
+            StartCoroutine(RemoveControlsAfterStart());
+        }
 	}
 
     /* PUBLIC METHODS */
