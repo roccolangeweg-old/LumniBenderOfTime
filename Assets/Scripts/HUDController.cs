@@ -34,7 +34,7 @@ public class HUDController : MonoBehaviour {
     }
 
     public void PlayerTimebend() {
-        player.ActivateTimebend();
+        player.Timebend();
     }
 
     public void StartGame() {

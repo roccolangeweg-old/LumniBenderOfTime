@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour {
     private bool paused;
     private float healthMultiplier;
 
+    private int bonusTargets;
+
     private Canvas pauseScreen;
 
     /* stuff to save */
@@ -55,6 +57,8 @@ public class GameManager : MonoBehaviour {
 
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
 
+        Application.targetFrameRate = 30;
+
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
     }
@@ -69,6 +73,8 @@ public class GameManager : MonoBehaviour {
         highestCombo = PlayerPrefs.GetInt("HighestCombo");
         totalEnemiesDefeated = PlayerPrefs.GetInt("EnemiesDefeated");
         totalJumps = PlayerPrefs.GetInt("Jumps");
+
+        player = FindObjectOfType<PlayerController>();
 	}
 
     void OnLevelWasLoaded() {
@@ -145,10 +151,6 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
-        //if (Application.loadedLevelName == "MainScene" && Input.GetMouseButtonDown(0)) {
-            //StartGame();
-        //}
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainScene") {
@@ -159,7 +161,17 @@ public class GameManager : MonoBehaviour {
                 UpdatePauseState();
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.A)) {
+            Debug.Log(player);
+            player.Timebend();
+        }
+        
 	}
+
+    public int MaxTBTargets(int targets) {
+        return targets + bonusTargets;
+    }
 
     public void playerDied() {
         currentDistance = (int) Mathf.Round(player.transform.position.x - startingDistance);
@@ -254,16 +266,31 @@ public class GameManager : MonoBehaviour {
         Application.LoadLevel("MainScene");
     }
 
-    public IEnumerator updateTimescale(float currentScale, float targetScale) {
+    public IEnumerator UpdateTimescale(float targetScale) {
+
+        float currentScale = Time.timeScale;
+
         if (currentScale < targetScale) {
             while (currentScale < targetScale) {
-                currentScale += 0.1f;
+
+                if(currentScale + 0.1f > targetScale) {
+                    currentScale = targetScale;
+                } else {
+                    currentScale += 0.1f;
+                }
+
                 Time.timeScale = currentScale;
                 yield return new WaitForEndOfFrame();
             }
         } else {
             while (currentScale > targetScale) {
-                currentScale -= 0.1f;
+
+                if(currentScale - 0.1f < targetScale) {
+                    currentScale = targetScale;
+                } else {
+                    currentScale -= 0.1f;
+                }
+
                 Time.timeScale = currentScale;
                 yield return new WaitForEndOfFrame();
             }
@@ -271,9 +298,13 @@ public class GameManager : MonoBehaviour {
     }
 
 	public void ShowAd() {
-		if (Advertisement.IsReady()) {
-			Advertisement.Show();
-		}
+        if (Random.Range(1, 5) == 1) {
+
+            if (Advertisement.IsReady()) {
+                Advertisement.Show();
+            }
+
+        }
 	}
 
     private float ScoreMultiplier() {

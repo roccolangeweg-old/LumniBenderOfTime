@@ -16,7 +16,6 @@ public class EnemyController : MonoBehaviour {
     private bool isAlive;
     private bool isAttacking;
 
-    private Vector3 basePosition;
     public float flyingSwing;
 
     private int currentHealth;
@@ -49,15 +48,13 @@ public class EnemyController : MonoBehaviour {
         myAnimator = this.GetComponentInChildren<Animator>();
         myCollider = this.GetComponentInChildren<Collider2D>();
 
-        basePosition = transform.position;
-
         if (isAerialType) {
             myRigidbody.isKinematic = true;
         }
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
         if (transform.position.x < destructionPoint.transform.position.x) {
             Destroy(gameObject);

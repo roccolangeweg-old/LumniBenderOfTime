@@ -36,6 +36,12 @@ public class PlayerController : MonoBehaviour {
     private bool timebendReady;
     private int timebendCharge;
 
+
+    /* TimeBend vars */
+    private int defaultTBTargets;
+    private int maxTBTargets;
+    private int currentTBTargets;
+
 	// Use this for initialization
 	void Start() {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -47,14 +53,25 @@ public class PlayerController : MonoBehaviour {
         myAnimator = GetComponent<Animator>();
 
         attackSpeedMultiplier = 1;
+        maxTBTargets = gameManager.MaxTBTargets(defaultTBTargets);
 
         playerDied = false;
 
         InvokeRepeating("ChargeTimebend", 0f, 0.25f);
 	}
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Jump();
+        }
+
+        if (Input.GetMouseButtonDown(1)) {
+            Attack();
+        }
+    }
 	
 	// Update is called once per frame
-	void Update() { 
+	void FixedUpdate() { 
 
         grounded = Physics2D.IsTouchingLayers(myCollider, groundLayer);
         knockbackTime -= Time.deltaTime;
@@ -110,14 +127,11 @@ public class PlayerController : MonoBehaviour {
         return currentHealth;
     }
 
-    public void ActivateTimebend() {
+    public void Timebend() {
 
-        if (timebendReady && !timebendActive && !playerDied) {
-            timebendActive = true;
-            timebendReady = false;
+        StartCoroutine(gameManager.UpdateTimescale(0.00001f));
+        currentTBTargets = maxTBTargets;
 
-            StartCoroutine(gameManager.updateTimescale(Time.timeScale, 0.5f));
-        }
     }
 
     public void UpdateCurrentSpeed(float value) {
@@ -139,7 +153,7 @@ public class PlayerController : MonoBehaviour {
         /* check if attack is possible, then attack */
         if (!isBasicAttacking && !playerDied) {
             isBasicAttacking = true;
-            GameObject loadedBasicAttack = (GameObject)Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
+            GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
             attackSpeedMultiplier = 1.5f;
             
             /* update the attack scale */
@@ -151,26 +165,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     /* CUSTOM PRIVATE FUNCTIONS */
-    private void ChargeTimebend() {
-        if (!timebendReady && !timebendActive) {
-            timebendCharge++;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-            
-            if (timebendCharge >= 100) {
-                timebendReady = true;
-            }
-        } else if (timebendActive) {
-            
-            timebendCharge-=5;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-            
-            if (timebendCharge < 0) {
-                timebendActive = false;
-                StartCoroutine(gameManager.updateTimescale(Time.timeScale, 1));
-                timebendCharge = 0;
-            }  
-        }
-    }
 
     private void knockPlayerBack() {
         isKnockedBack = true;
