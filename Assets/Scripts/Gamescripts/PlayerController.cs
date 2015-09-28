@@ -127,7 +127,7 @@ public class PlayerController : MonoBehaviour {
     public void Jump() {
 
         /* check if player is on the ground, then jump */
-        if (grounded) {
+        if (grounded && !playerDied) {
             myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
             gameManager.addJump();
         }
@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviour {
     public void Attack() {
 
         /* check if attack is possible, then attack */
-        if (!isBasicAttacking) {
+        if (!isBasicAttacking && !playerDied) {
             isBasicAttacking = true;
             GameObject loadedBasicAttack = (GameObject)Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
             attackSpeedMultiplier = 1.5f;
