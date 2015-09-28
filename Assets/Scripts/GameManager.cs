@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UnityEngine.Advertisements;
+using UnityEngine.Analytics;
+using System.Collections.Generic;
+
 public class GameManager : MonoBehaviour {
 
     public static GameManager gmInstance = null;
@@ -93,6 +97,8 @@ public class GameManager : MonoBehaviour {
 
             if (gmInstance == this) {
 
+				ShowAd ();
+
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
                 totalJumps += currentJumps;
@@ -102,6 +108,17 @@ public class GameManager : MonoBehaviour {
                 if(Mathf.RoundToInt(currentScore) > highScore) {
                     highScore = Mathf.RoundToInt(currentScore);
                 }
+
+				Analytics.CustomEvent("Results", new Dictionary<string, object>
+				{
+					{ "score", currentScore },
+					{ "orbs", collectedOrbs },
+					{ "relics", collectedRelics },
+					{ "jumps", currentJumps },
+					{ "enemies", enemiesDefeated },
+					{ "distance", currentDistance }
+
+				});
 
                 GA3.LogEvent("Stats","All","Score", Mathf.RoundToInt(currentScore) );
                 GA3.LogEvent("Stats","All","Orbs Collected",collectedOrbs);
@@ -253,6 +270,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+	public void ShowAd() {
+		if (Advertisement.IsReady()) {
+			Advertisement.Show();
+		}
+	}
+
     private float ScoreMultiplier() {
         return Mathf.Floor(currentCombo) * multiplierPercentage;
     }
@@ -288,4 +311,5 @@ public class GameManager : MonoBehaviour {
             currentCombo = 1;
         }
     }
+
 }

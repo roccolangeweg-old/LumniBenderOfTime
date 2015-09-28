@@ -6,12 +6,14 @@ public class HUDController : MonoBehaviour {
 
     private Canvas myCanvas;
     private PlayerController player;
+    private GameManager gameManager;
 
 
 	// Use this for initialization
 	void Start () {
         myCanvas = GetComponent<Canvas>();
 
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = FindObjectOfType<PlayerController>();
 
         StartCoroutine(RemoveControlsAfterStart());
@@ -33,6 +35,10 @@ public class HUDController : MonoBehaviour {
 
     public void PlayerTimebend() {
         player.ActivateTimebend();
+    }
+
+    public void StartGame() {
+        gameManager.StartGame();
     }
 
 
