@@ -105,7 +105,6 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
 
-        Debug.Log(!cameraFollow);
         if (other.gameObject.tag == "Enemy" && !isBasicAttacking && cameraFollow && gameObject.layer == LayerMask.NameToLayer("Player")) {
             currentHealth-=0.5f;
             knockPlayerBack();
