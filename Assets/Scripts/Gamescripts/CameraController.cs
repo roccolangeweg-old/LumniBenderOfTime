@@ -63,24 +63,28 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        distanceToMove = (player.transform.position.x + 2.5f) - lastPlayerPosition.x;
-        this.transform.position = new Vector3(this.transform.position.x + distanceToMove, this.transform.position.y, this.transform.position.z);
+        if (player.GetCameraFollow()) {
 
-        lastPlayerPosition = new Vector3(player.transform.position.x + 2.5f, player.transform.position.y, transform.position.z);
+            distanceToMove = (player.transform.position.x + 2.5f) - lastPlayerPosition.x;
+            this.transform.position = new Vector3(this.transform.position.x + distanceToMove, this.transform.position.y, this.transform.position.z);
 
-        if (player.getCurrentHealth() != lastPlayerHealth) {
-            lastPlayerHealth = player.getCurrentHealth();
-            updateHearts(lastPlayerHealth);
-        }
+            lastPlayerPosition = new Vector3(player.transform.position.x + 2.5f, player.transform.position.y, transform.position.z);
 
-        orbText.text = gameManager.getCollectedOrbs().ToString();
-        scoreText.text = gameManager.getCurrentScore().ToString();
+            if (player.getCurrentHealth() != lastPlayerHealth) {
+                lastPlayerHealth = player.getCurrentHealth();
+                updateHearts(lastPlayerHealth);
+            }
 
-        if (gameManager.RoundedCombo() >= 2) {
-            comboText.enabled = true;
-            comboText.text = gameManager.RoundedCombo().ToString() + "x Combo";
-        } else {
-            comboText.enabled = false;
+            orbText.text = gameManager.getCollectedOrbs().ToString();
+            scoreText.text = gameManager.getCurrentScore().ToString();
+
+            if (gameManager.RoundedCombo() >= 2) {
+                comboText.enabled = true;
+                comboText.text = gameManager.RoundedCombo().ToString() + "x Combo";
+            } else {
+                comboText.enabled = false;
+            }
+
         }
 
 	}

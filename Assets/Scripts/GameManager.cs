@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-    public static GameManager gmInstance = null;
+    public static GameManager instance = null;
 
     private GoogleAnalyticsV3 GA3;
     private PlayerController player;
@@ -17,9 +17,11 @@ public class GameManager : MonoBehaviour {
     private bool paused;
     private float healthMultiplier;
 
-    private int bonusTargets;
-
     private Canvas pauseScreen;
+    private float lastTimescale;
+
+    private bool loadingGameScene;
+    private AsyncOperation gameLoader;
 
     /* stuff to save */
     private int collectedOrbs;
@@ -50,9 +52,9 @@ public class GameManager : MonoBehaviour {
     //Awake is always called before any Start functions
     void Awake() {
         /* check if gamemanager already exists */
-        if (gmInstance == null) {
-            gmInstance = this;
-        } else if (gmInstance != this) {
+        if (instance == null) {
+            instance = this;
+        } else if (instance != this) {
             /* enforce Singleton, only 1 game manager may exist */
             Destroy(gameObject);
         }    
@@ -60,6 +62,7 @@ public class GameManager : MonoBehaviour {
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
 
         Application.targetFrameRate = 30;
+        Time.timeScale = 1f;
 
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
@@ -78,12 +81,16 @@ public class GameManager : MonoBehaviour {
 
         player = FindObjectOfType<PlayerController>();
         tbController = FindObjectOfType<TimebendController>();
+
 	}
 
     void OnLevelWasLoaded() {
 
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
         GA3.LogScreen(Application.loadedLevelName);
+
+        loadingGameScene = false;
+        gameLoader = new AsyncOperation();
 
         if (Application.loadedLevelName == "GameScene") {
 
@@ -103,10 +110,9 @@ public class GameManager : MonoBehaviour {
             enemiesDefeated = 0;
             currentScore = 0;
 
-
         } else if (Application.loadedLevelName == "ScoreScene") {
 
-            if (gmInstance == this) {
+            if (instance == this) {
 
 				ShowAd ();
 
@@ -157,26 +163,27 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
+        if (Application.loadedLevelName != "GameScene" && !loadingGameScene) {
+            StartCoroutine(LoadGameScene());
+            loadingGameScene = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainScene") {
                 Application.Quit();
             } else if (Application.loadedLevelName == "GameScene" && paused) {
                 ReturnToMain();
             } else if (Application.loadedLevelName == "GameScene" && !paused) {
+                Debug.Log(Time.timeScale);
                 UpdatePauseState();
             }
         }
 
         if(Input.GetKeyDown(KeyCode.A)) {
-            Debug.Log(player);
             player.Timebend();
         }
         
 	}
-
-    public int MaxTBTargets(int targets) {
-        return targets + bonusTargets;
-    }
 
     public void playerDied() {
         currentDistance = (int) Mathf.Round(player.transform.position.x - startingDistance);
@@ -258,12 +265,25 @@ public class GameManager : MonoBehaviour {
     public void UpdatePauseState() {
         paused = !paused;
         pauseScreen.enabled = !pauseScreen.enabled;
-        Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+
+        Debug.Log(Time.timeScale);
+        Debug.Log(pauseScreen.enabled);
+
+        if (pauseScreen.enabled) {
+            lastTimescale = Time.timeScale;
+            Time.timeScale = 0;
+            Debug.Log(Time.timeScale);
+        } else {
+            Time.timeScale = lastTimescale;
+        }
+            
     }
 
     public void StartGame() {
-        Application.LoadLevel("GameScene");
-        paused = false;
+        if (gameLoader != null) {
+            gameLoader.allowSceneActivation = true;
+            paused = false;
+        }
     }
 
     public void ReturnToMain() {
@@ -278,10 +298,10 @@ public class GameManager : MonoBehaviour {
         if (currentScale < targetScale) {
             while (currentScale < targetScale) {
 
-                if(currentScale + 0.1f > targetScale) {
+                if(currentScale + 0.2f > targetScale) {
                     currentScale = targetScale;
                 } else {
-                    currentScale += 0.1f;
+                    currentScale += 0.2f;
                 }
 
                 Time.timeScale = currentScale;
@@ -290,10 +310,10 @@ public class GameManager : MonoBehaviour {
         } else {
             while (currentScale > targetScale) {
 
-                if(currentScale - 0.1f < targetScale) {
+                if(currentScale - 0.2f < targetScale) {
                     currentScale = targetScale;
                 } else {
-                    currentScale -= 0.1f;
+                    currentScale -= 0.2f;
                 }
 
                 Time.timeScale = currentScale;
@@ -324,6 +344,19 @@ public class GameManager : MonoBehaviour {
             currentHighestCombo = (int) RoundedCombo();
         }
     
+    }
+
+    private IEnumerator LoadGameScene() {
+        Debug.Log("LOADING LEVEL");
+
+        
+
+        gameLoader = Application.LoadLevelAsync("GameScene");
+        gameLoader.allowSceneActivation = false;
+
+        yield return gameLoader.isDone;
+
+        Debug.Log("DONE LOADING");
     }
 
     public float RoundedCombo() {

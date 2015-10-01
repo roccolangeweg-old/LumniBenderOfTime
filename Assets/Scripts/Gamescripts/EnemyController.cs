@@ -109,9 +109,9 @@ public class EnemyController : MonoBehaviour {
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */
                 if (isAerialType) {
-                    this.myRigidbody.velocity = new Vector2(10, -3);      
+                    this.myRigidbody.velocity = new Vector2(12, -3);      
                 } else {
-                    this.myRigidbody.velocity = new Vector2(8, 6);
+                    this.myRigidbody.velocity = new Vector2(12, 6);
                 }
             }
 
@@ -146,6 +146,7 @@ public class EnemyController : MonoBehaviour {
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
 
 
+
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
 
@@ -165,9 +166,24 @@ public class EnemyController : MonoBehaviour {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
 
-        myRigidbody.velocity = new Vector2(8,2);
+        if (isAerialType) {
+            myAnimator.gameObject.transform.position = transform.position;
+        }
+
+        myRigidbody.velocity = new Vector2(10,3);
 
 
+    }
+
+    public bool IsAerial() {
+        return isAerialType;
+    }
+
+    public void HitByTimebend() {
+        currentHealth = 0;
+        if (isAerialType) {
+            myAnimator.gameObject.transform.position = transform.position;
+        }
     }
     
     

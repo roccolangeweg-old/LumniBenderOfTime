@@ -36,9 +36,8 @@ public class PlayerController : MonoBehaviour {
 
 
     /* TimeBend vars */
-    private int defaultTBTargets;
-    private int maxTBTargets;
-    private int currentTBTargets;
+    private bool cameraFollow;
+    private Vector3 timeBendPosition;
 
 	// Use this for initialization
 	void Start() {
@@ -52,6 +51,7 @@ public class PlayerController : MonoBehaviour {
 
         attackSpeedMultiplier = 1;
 
+        cameraFollow = true;
         playerDied = false;
 	}
 
@@ -86,7 +86,6 @@ public class PlayerController : MonoBehaviour {
                 gameManager.addScore(0.1f);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
-                gameObject.layer = LayerMask.NameToLayer("Player");
             }
             
             /* check if animation for attack has finished */
@@ -106,7 +105,8 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
 
-        if (other.gameObject.tag == "Enemy" && !isBasicAttacking) {
+        Debug.Log(!cameraFollow);
+        if (other.gameObject.tag == "Enemy" && !isBasicAttacking && cameraFollow && gameObject.layer == LayerMask.NameToLayer("Player")) {
             currentHealth-=0.5f;
             knockPlayerBack();
             gameManager.ResetCombo();
@@ -124,11 +124,14 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Timebend() {
-        gameManager.GetTBController().EnableTimebendMode();
+        if(!isKnockedBack) {
+            gameManager.GetTBController().EnableTimebendMode();
+            myAnimator.SetBool("TimebendActive", true);
+        }
     }
 
     public void TimebendAttack(List<GameObject> targets) {
-
+        Debug.Log("TEST");
         StartCoroutine(AttackTargets(targets));
 
     }
@@ -153,7 +156,7 @@ public class PlayerController : MonoBehaviour {
         if (!isBasicAttacking && !playerDied) {
             isBasicAttacking = true;
             GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
-            attackSpeedMultiplier = 1.5f;
+            attackSpeedMultiplier = 1.1f;
             
             /* update the attack scale */
             loadedBasicAttack.transform.parent = this.gameObject.transform;
@@ -163,13 +166,17 @@ public class PlayerController : MonoBehaviour {
 
     }
 
+    public bool GetCameraFollow() {
+        return cameraFollow;
+    }
+
     /* CUSTOM PRIVATE FUNCTIONS */
 
     private void knockPlayerBack() {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
         myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
-        gameObject.layer = LayerMask.NameToLayer("HurtPlayer");
+        StartCoroutine(Invincible(1));
            
     }
 
@@ -186,13 +193,73 @@ public class PlayerController : MonoBehaviour {
     }
 
     private IEnumerator AttackTargets(List<GameObject> targets) {
+        cameraFollow = false;
+
+        timeBendPosition = transform.position;
 
         for (int i = 0; i < targets.Count; i++) {
-            this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y, transform.position.z);
-            yield return new WaitForSeconds(1 * Time.timeScale);
+            EnemyController targetController = targets[i].GetComponentInParent<EnemyController>();
+
+            if(targetController.IsAerial()) {
+                this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y, transform.position.z - 1);
+            } else {
+                this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y + 0.5f, transform.position.z - 1);
+            }
+
+            myAnimator.SetTrigger("TB_Attack");
+            yield return new WaitForEndOfFrame();
+            Debug.Log(myAnimator.GetCurrentAnimatorStateInfo(0).length);
+            yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);
+
         }
 
+        for (int i = 0; i < targets.Count; i++) {
+            EnemyController targetController = targets[i].GetComponentInParent<EnemyController>();
+            targetController.HitByTimebend();
+        }
+
+        cameraFollow = true;
+        transform.position = timeBendPosition;
+
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
+        StartCoroutine(Invincible(1));
+
         gameManager.GetTBController().DisableTimebendMode();
+        myAnimator.SetBool("TimebendActive", false);;
+        myAnimator.SetTrigger("StopTimebend");
+    }
+
+    private IEnumerator Invincible(float seconds) {
+
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
+
+        float elapsedTime = 0f;
+        bool increase = false;
+        Color currentColor = GetComponent<SpriteRenderer>().color;
+
+        while (elapsedTime < seconds || currentColor.a != 1) {
+
+            if(currentColor.a >= 1) {
+                increase = false;
+            } else if (currentColor.a <= 0.3f) {
+                increase = true;
+            }
+
+            if (increase) {
+                currentColor.a += 0.05f;
+            } else {
+                currentColor.a -= 0.05f;
+            }
+
+            GetComponent<SpriteRenderer>().color = currentColor;
+
+            yield return new WaitForEndOfFrame();
+            elapsedTime += Time.deltaTime;
+
+        }
+
+        gameObject.layer = LayerMask.NameToLayer("Player");
+
     }
     
 }

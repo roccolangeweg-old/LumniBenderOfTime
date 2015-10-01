@@ -13,12 +13,14 @@ public class TimebendController : MonoBehaviour {
     private Slider timeSlider;
 
     private bool timebendEnabled;
+    private bool sequencePlaying;
     private int remainingTaps;
 
     public GameObject markerObject;
     public float timeMultiplier;
 
     private List<GameObject> targets;
+    private List<Image> createdMarkers;
 
 	// Use this for initialization
 	void Start() {
@@ -26,17 +28,17 @@ public class TimebendController : MonoBehaviour {
         player = FindObjectOfType<PlayerController>();
         timeSlider = GetComponentInChildren<Slider>();
 
-        gameManager = GameManager.gmInstance;
+        gameManager = GameManager.instance;
 
         timebendEnabled = false;
 	}
 
     void Update() {
-        if (timebendEnabled) {
+        if (timebendEnabled && Time.timeScale > 0) {
+
             timeSlider.value -= (Time.deltaTime / Time.timeScale) * timeMultiplier;
 
-            if (timeSlider.value <= 0 || remainingTaps == 0) {
-
+            if ((timeSlider.value <= 0 || remainingTaps == 0) && !sequencePlaying) {
                 PlayTimebendSequence();
 
             }
@@ -47,20 +49,26 @@ public class TimebendController : MonoBehaviour {
     /* PUBLIC METHODS */
     public void EnableTimebendMode() {
 
-        StartCoroutine(gameManager.UpdateTimescale(0.00001f));
+        if (!timebendEnabled) {
+            StartCoroutine(gameManager.UpdateTimescale(0.00001f));
 
-        timebendEnabled = true;
-        myCanvas.enabled = true;
-        remainingTaps = 5;
+            timebendEnabled = true;
+            myCanvas.enabled = true;
+            remainingTaps = 5;
+            timeSlider.value = 100;
 
-        targets = new List<GameObject>();
-        
-        UpdateHUD();
+            targets = new List<GameObject>();
+            createdMarkers = new List<Image>();
+
+            sequencePlaying = false;
+            
+            UpdateHUD();
+        }
     }
     
     public void DisableTimebendMode() {
         timebendEnabled = false;
-        myCanvas.enabled = false;
+
 
         StartCoroutine(gameManager.UpdateTimescale(1f));
 
@@ -68,7 +76,6 @@ public class TimebendController : MonoBehaviour {
     }
 	
     public void Tap() {
-    
 
         if (timebendEnabled) {
 
@@ -76,7 +83,7 @@ public class TimebendController : MonoBehaviour {
 
             RaycastHit2D hit = Physics2D.Raycast(touchPosition, (Input.GetTouch(0).position));
 
-            if (hit.collider && hit.collider.tag == "Enemy"){
+            if (hit.collider && hit.collider.tag == "Enemy" && hit.collider.gameObject.layer != LayerMask.NameToLayer("DeadEnemies")){
 
                 targets.Add(hit.collider.gameObject);
 
@@ -87,14 +94,15 @@ public class TimebendController : MonoBehaviour {
                 markerImage.rectTransform.anchoredPosition = new Vector2(0, 20);
                 markerImage.rectTransform.pivot = new Vector2(0.5f,0.5f);
                 
-                Vector2 pos = hit.collider.transform.position;  // get the game object position
-                Vector2 viewportPoint = Camera.main.WorldToViewportPoint(pos);  //convert game object position to VievportPoint
+                Vector2 pos = hit.collider.transform.position; 
+                Vector2 viewportPoint = Camera.main.WorldToViewportPoint(pos); 
 
-                // set MIN and MAX Anchor values(positions) to the same position (ViewportPoint)
                 markerImage.rectTransform.anchorMin = viewportPoint;  
                 markerImage.rectTransform.anchorMax = viewportPoint;
 
                 markerImage.rectTransform.localScale = new Vector3(2f,2f,2f);
+                createdMarkers.Add(markerImage);
+
 
                 remainingTaps--;
                 UpdateHUD();
@@ -132,9 +140,14 @@ public class TimebendController : MonoBehaviour {
     }
 
     private void PlayTimebendSequence() {
+        sequencePlaying = true;
+        myCanvas.enabled = false;
+
+        for(int i = 0; i < createdMarkers.Count; i++) {
+            Destroy(createdMarkers[i].gameObject);
+        }
 
         player.TimebendAttack(targets);
-
     }
 
 }
