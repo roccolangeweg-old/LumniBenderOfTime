@@ -7,15 +7,21 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour {
 
-    public static GameManager gmInstance = null;
+    public static GameManager instance = null;
 
     private GoogleAnalyticsV3 GA3;
     private PlayerController player;
+
+    private TimebendController tbController;
 
     private bool paused;
     private float healthMultiplier;
 
     private Canvas pauseScreen;
+    private float lastTimescale;
+
+    private bool loadingGameScene;
+    private AsyncOperation gameLoader;
 
     /* stuff to save */
     private int collectedOrbs;
@@ -46,14 +52,17 @@ public class GameManager : MonoBehaviour {
     //Awake is always called before any Start functions
     void Awake() {
         /* check if gamemanager already exists */
-        if (gmInstance == null) {
-            gmInstance = this;
-        } else if (gmInstance != this) {
+        if (instance == null) {
+            instance = this;
+        } else if (instance != this) {
             /* enforce Singleton, only 1 game manager may exist */
             Destroy(gameObject);
         }    
 
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
+
+        Application.targetFrameRate = 30;
+        Time.timeScale = 1f;
 
         //Sets this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
@@ -69,6 +78,10 @@ public class GameManager : MonoBehaviour {
         highestCombo = PlayerPrefs.GetInt("HighestCombo");
         totalEnemiesDefeated = PlayerPrefs.GetInt("EnemiesDefeated");
         totalJumps = PlayerPrefs.GetInt("Jumps");
+
+        player = FindObjectOfType<PlayerController>();
+        tbController = FindObjectOfType<TimebendController>();
+
 	}
 
     void OnLevelWasLoaded() {
@@ -76,10 +89,15 @@ public class GameManager : MonoBehaviour {
         GA3 = FindObjectOfType<GoogleAnalyticsV3>();
         GA3.LogScreen(Application.loadedLevelName);
 
+        loadingGameScene = false;
+        gameLoader = new AsyncOperation();
+
         if (Application.loadedLevelName == "GameScene") {
 
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
             player = FindObjectOfType<PlayerController>();
+            tbController = FindObjectOfType<TimebendController>();
+
             startingDistance = player.transform.position.x;
 
             collectedOrbs = 0;
@@ -92,10 +110,9 @@ public class GameManager : MonoBehaviour {
             enemiesDefeated = 0;
             currentScore = 0;
 
-
         } else if (Application.loadedLevelName == "ScoreScene") {
 
-            if (gmInstance == this) {
+            if (instance == this) {
 
 				ShowAd ();
 
@@ -145,10 +162,11 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
-        //if (Application.loadedLevelName == "MainScene" && Input.GetMouseButtonDown(0)) {
-            //StartGame();
-        //}
+
+        if (Application.loadedLevelName != "GameScene" && !loadingGameScene) {
+            StartCoroutine(LoadGameScene());
+            loadingGameScene = true;
+        }
 
         if (Input.GetKeyDown(KeyCode.Escape)) {
             if(Application.loadedLevelName == "MainScene") {
@@ -156,9 +174,15 @@ public class GameManager : MonoBehaviour {
             } else if (Application.loadedLevelName == "GameScene" && paused) {
                 ReturnToMain();
             } else if (Application.loadedLevelName == "GameScene" && !paused) {
+                Debug.Log(Time.timeScale);
                 UpdatePauseState();
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.A)) {
+            player.Timebend();
+        }
+        
 	}
 
     public void playerDied() {
@@ -241,12 +265,25 @@ public class GameManager : MonoBehaviour {
     public void UpdatePauseState() {
         paused = !paused;
         pauseScreen.enabled = !pauseScreen.enabled;
-        Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+
+        Debug.Log(Time.timeScale);
+        Debug.Log(pauseScreen.enabled);
+
+        if (pauseScreen.enabled) {
+            lastTimescale = Time.timeScale;
+            Time.timeScale = 0;
+            Debug.Log(Time.timeScale);
+        } else {
+            Time.timeScale = lastTimescale;
+        }
+            
     }
 
     public void StartGame() {
-        Application.LoadLevel("GameScene");
-        paused = false;
+        if (gameLoader != null) {
+            gameLoader.allowSceneActivation = true;
+            paused = false;
+        }
     }
 
     public void ReturnToMain() {
@@ -254,16 +291,31 @@ public class GameManager : MonoBehaviour {
         Application.LoadLevel("MainScene");
     }
 
-    public IEnumerator updateTimescale(float currentScale, float targetScale) {
+    public IEnumerator UpdateTimescale(float targetScale) {
+
+        float currentScale = Time.timeScale;
+
         if (currentScale < targetScale) {
             while (currentScale < targetScale) {
-                currentScale += 0.1f;
+
+                if(currentScale + 0.2f > targetScale) {
+                    currentScale = targetScale;
+                } else {
+                    currentScale += 0.2f;
+                }
+
                 Time.timeScale = currentScale;
                 yield return new WaitForEndOfFrame();
             }
         } else {
             while (currentScale > targetScale) {
-                currentScale -= 0.1f;
+
+                if(currentScale - 0.2f < targetScale) {
+                    currentScale = targetScale;
+                } else {
+                    currentScale -= 0.2f;
+                }
+
                 Time.timeScale = currentScale;
                 yield return new WaitForEndOfFrame();
             }
@@ -271,9 +323,13 @@ public class GameManager : MonoBehaviour {
     }
 
 	public void ShowAd() {
-		if (Advertisement.IsReady()) {
-			Advertisement.Show();
-		}
+        if (Random.Range(1, 4) == 1) {
+
+            if (Advertisement.IsReady()) {
+                //Advertisement.Show();
+            }
+
+        }
 	}
 
     private float ScoreMultiplier() {
@@ -281,13 +337,26 @@ public class GameManager : MonoBehaviour {
     }
 
     private void UpdateComboMeter() {
+
         currentCombo += 1 / (RoundedCombo() + 1);
 
         if (RoundedCombo() > currentHighestCombo) {
             currentHighestCombo = (int) RoundedCombo();
         }
     
-        StartCoroutine(StartComboExpire());
+    }
+
+    private IEnumerator LoadGameScene() {
+        Debug.Log("LOADING LEVEL");
+
+        
+
+        gameLoader = Application.LoadLevelAsync("GameScene");
+        gameLoader.allowSceneActivation = false;
+
+        yield return gameLoader.isDone;
+
+        Debug.Log("DONE LOADING");
     }
 
     public float RoundedCombo() {
@@ -298,18 +367,8 @@ public class GameManager : MonoBehaviour {
         currentCombo = 1;
     }
 
-    public GoogleAnalyticsV3 getAnalytics() {
-        return GA3;
-    }
-
-    private IEnumerator StartComboExpire() {
-        float currentComboStart = currentCombo;
-
-        yield return new WaitForSeconds(5);
-
-        if (currentCombo == currentComboStart) {
-            currentCombo = 1;
-        }
+    public TimebendController GetTBController() {
+        return tbController;
     }
 
 }

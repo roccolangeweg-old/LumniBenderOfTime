@@ -16,7 +16,6 @@ public class EnemyController : MonoBehaviour {
     private bool isAlive;
     private bool isAttacking;
 
-    private Vector3 basePosition;
     public float flyingSwing;
 
     private int currentHealth;
@@ -49,15 +48,13 @@ public class EnemyController : MonoBehaviour {
         myAnimator = this.GetComponentInChildren<Animator>();
         myCollider = this.GetComponentInChildren<Collider2D>();
 
-        basePosition = transform.position;
-
         if (isAerialType) {
             myRigidbody.isKinematic = true;
         }
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 
         if (transform.position.x < destructionPoint.transform.position.x) {
             Destroy(gameObject);
@@ -112,9 +109,9 @@ public class EnemyController : MonoBehaviour {
 
                 /* check if we need to bounce the enemy up (ground) or down (aerial) */
                 if (isAerialType) {
-                    this.myRigidbody.velocity = new Vector2(10, -3);      
+                    this.myRigidbody.velocity = new Vector2(12, -3);      
                 } else {
-                    this.myRigidbody.velocity = new Vector2(8, 6);
+                    this.myRigidbody.velocity = new Vector2(12, 6);
                 }
             }
 
@@ -148,7 +145,7 @@ public class EnemyController : MonoBehaviour {
         /* put it in front of the forground so it doesn't dissapear behind it */
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
 
-        gameManager.getAnalytics().LogEvent("Statistics","Gameplay","Enemies Defeated",1);
+
 
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
@@ -169,9 +166,24 @@ public class EnemyController : MonoBehaviour {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
 
-        myRigidbody.velocity = new Vector2(8,2);
+        if (isAerialType) {
+            myAnimator.gameObject.transform.position = transform.position;
+        }
+
+        myRigidbody.velocity = new Vector2(10,3);
 
 
+    }
+
+    public bool IsAerial() {
+        return isAerialType;
+    }
+
+    public void HitByTimebend() {
+        currentHealth = 0;
+        if (isAerialType) {
+            myAnimator.gameObject.transform.position = transform.position;
+        }
     }
     
     

@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+using System.Collections.Generic;
+
 public class PlayerController : MonoBehaviour {
 
     private GameManager gameManager;
@@ -22,6 +24,7 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D myRigidbody;
     private Collider2D myCollider;
     private Animator myAnimator;
+    private AudioSource myAudioSource;
 
     private bool grounded;
     private bool isBasicAttacking;
@@ -32,9 +35,13 @@ public class PlayerController : MonoBehaviour {
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
-    private bool timebendActive;
-    private bool timebendReady;
-    private int timebendCharge;
+    public AudioClip soundJump;
+    public AudioClip soundAttack;
+
+
+    /* TimeBend vars */
+    private bool cameraFollow;
+    private Vector3 timeBendPosition;
 
 	// Use this for initialization
 	void Start() {
@@ -45,16 +52,26 @@ public class PlayerController : MonoBehaviour {
         myRigidbody = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
+        myAudioSource = GetComponent<AudioSource>();
 
         attackSpeedMultiplier = 1;
 
+        cameraFollow = true;
         playerDied = false;
-
-        InvokeRepeating("ChargeTimebend", 0f, 0.25f);
 	}
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Jump();
+        }
+
+        if (Input.GetMouseButtonDown(1)) {
+            Attack();
+        }
+    }
 	
 	// Update is called once per frame
-	void Update() { 
+	void FixedUpdate() { 
 
         grounded = Physics2D.IsTouchingLayers(myCollider, groundLayer);
         knockbackTime -= Time.deltaTime;
@@ -93,7 +110,7 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D other) {
 
-        if (other.gameObject.tag == "Enemy" && !isBasicAttacking) {
+        if (other.gameObject.tag == "Enemy" && !isBasicAttacking && cameraFollow && gameObject.layer == LayerMask.NameToLayer("Player")) {
             currentHealth-=0.5f;
             knockPlayerBack();
             gameManager.ResetCombo();
@@ -110,14 +127,15 @@ public class PlayerController : MonoBehaviour {
         return currentHealth;
     }
 
-    public void ActivateTimebend() {
-
-        if (timebendReady && !timebendActive && !playerDied) {
-            timebendActive = true;
-            timebendReady = false;
-
-            StartCoroutine(gameManager.updateTimescale(Time.timeScale, 0.5f));
+    public void Timebend() {
+        if(!isKnockedBack) {
+            gameManager.GetTBController().EnableTimebendMode();
+            myAnimator.SetBool("TimebendActive", true);
         }
+    }
+
+    public void TimebendAttack(List<GameObject> targets) {
+        StartCoroutine(AttackTargets(targets));
     }
 
     public void UpdateCurrentSpeed(float value) {
@@ -129,6 +147,7 @@ public class PlayerController : MonoBehaviour {
         /* check if player is on the ground, then jump */
         if (grounded && !playerDied) {
             myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+            myAudioSource.PlayOneShot(soundJump);
             gameManager.addJump();
         }
 
@@ -139,8 +158,10 @@ public class PlayerController : MonoBehaviour {
         /* check if attack is possible, then attack */
         if (!isBasicAttacking && !playerDied) {
             isBasicAttacking = true;
-            GameObject loadedBasicAttack = (GameObject)Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
-            attackSpeedMultiplier = 1.5f;
+            GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
+            attackSpeedMultiplier = 1.1f;
+
+            myAudioSource.PlayOneShot(soundAttack);
             
             /* update the attack scale */
             loadedBasicAttack.transform.parent = this.gameObject.transform;
@@ -150,32 +171,18 @@ public class PlayerController : MonoBehaviour {
 
     }
 
-    /* CUSTOM PRIVATE FUNCTIONS */
-    private void ChargeTimebend() {
-        if (!timebendReady && !timebendActive) {
-            timebendCharge++;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-            
-            if (timebendCharge >= 100) {
-                timebendReady = true;
-            }
-        } else if (timebendActive) {
-            
-            timebendCharge-=5;
-            FindObjectOfType<TimebendImageScript>().GetComponent<TimebendImageScript>().setPercentage(timebendCharge);
-            
-            if (timebendCharge < 0) {
-                timebendActive = false;
-                StartCoroutine(gameManager.updateTimescale(Time.timeScale, 1));
-                timebendCharge = 0;
-            }  
-        }
+    public bool GetCameraFollow() {
+        return cameraFollow;
     }
+
+    /* CUSTOM PRIVATE FUNCTIONS */
 
     private void knockPlayerBack() {
         isKnockedBack = true;
         knockbackTime = knockbackLength;
         myRigidbody.velocity = new Vector2(-3 * knockbackAmplifier * 0.75f, 5 * knockbackAmplifier / 2);
+        StartCoroutine(Invincible(1));
+           
     }
 
     private IEnumerator StartPlayerDeathAnimation() {
@@ -188,6 +195,78 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorClipInfo(0).Length);
 
         gameManager.playerDied();
+    }
+
+    private IEnumerator AttackTargets(List<GameObject> targets) {
+        cameraFollow = false;
+
+        timeBendPosition = transform.position;
+
+        for (int i = 0; i < targets.Count; i++) {
+            EnemyController targetController = targets[i].GetComponentInParent<EnemyController>();
+
+            if(targetController.IsAerial()) {
+                this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y, transform.position.z - 1);
+            } else {
+                this.transform.position = new Vector3(targets[i].transform.position.x - 1, targets[i].transform.position.y + 0.5f, transform.position.z - 1);
+            }
+
+            myAnimator.SetTrigger("TB_Attack");
+
+            myAudioSource.PlayOneShot(gameManager.GetTBController().TargetSound(i));
+
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);
+
+        }
+
+        for (int i = 0; i < targets.Count; i++) {
+            EnemyController targetController = targets[i].GetComponentInParent<EnemyController>();
+            targetController.HitByTimebend();
+        }
+
+        cameraFollow = true;
+        transform.position = timeBendPosition;
+
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
+        StartCoroutine(Invincible(1));
+
+        gameManager.GetTBController().DisableTimebendMode();
+        myAnimator.SetBool("TimebendActive", false);;
+        myAnimator.SetTrigger("StopTimebend");
+    }
+
+    private IEnumerator Invincible(float seconds) {
+
+        gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
+
+        float elapsedTime = 0f;
+        bool increase = false;
+        Color currentColor = GetComponent<SpriteRenderer>().color;
+
+        while (elapsedTime < seconds || currentColor.a != 1) {
+
+            if(currentColor.a >= 1) {
+                increase = false;
+            } else if (currentColor.a <= 0.3f) {
+                increase = true;
+            }
+
+            if (increase) {
+                currentColor.a += 0.05f;
+            } else {
+                currentColor.a -= 0.05f;
+            }
+
+            GetComponent<SpriteRenderer>().color = currentColor;
+
+            yield return new WaitForEndOfFrame();
+            elapsedTime += Time.deltaTime;
+
+        }
+
+        gameObject.layer = LayerMask.NameToLayer("Player");
+
     }
     
 }
