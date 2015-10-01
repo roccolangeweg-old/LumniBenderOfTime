@@ -22,6 +22,8 @@ public class TimebendController : MonoBehaviour {
     private List<GameObject> targets;
     private List<Image> createdMarkers;
 
+    public List<AudioClip> targetHitSounds;
+
 	// Use this for initialization
 	void Start() {
         myCanvas = GetComponent<Canvas>();
@@ -109,6 +111,14 @@ public class TimebendController : MonoBehaviour {
             }
         }
 
+    }
+
+    public AudioClip TargetSound(int position) {
+        if (position > targetHitSounds.Count) {
+            return targetHitSounds [targetHitSounds.Count];
+        } else {
+            return targetHitSounds [position];
+        }
     }
 
 

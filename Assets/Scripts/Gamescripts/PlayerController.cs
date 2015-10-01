@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D myRigidbody;
     private Collider2D myCollider;
     private Animator myAnimator;
+    private AudioSource myAudioSource;
 
     private bool grounded;
     private bool isBasicAttacking;
@@ -33,6 +34,9 @@ public class PlayerController : MonoBehaviour {
 
     public LayerMask groundLayer;
     public GameObject basicAttack;
+
+    public AudioClip soundJump;
+    public AudioClip soundAttack;
 
 
     /* TimeBend vars */
@@ -48,6 +52,7 @@ public class PlayerController : MonoBehaviour {
         myRigidbody = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<Collider2D>();
         myAnimator = GetComponent<Animator>();
+        myAudioSource = GetComponent<AudioSource>();
 
         attackSpeedMultiplier = 1;
 
@@ -130,9 +135,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void TimebendAttack(List<GameObject> targets) {
-        Debug.Log("TEST");
         StartCoroutine(AttackTargets(targets));
-
     }
 
     public void UpdateCurrentSpeed(float value) {
@@ -144,6 +147,7 @@ public class PlayerController : MonoBehaviour {
         /* check if player is on the ground, then jump */
         if (grounded && !playerDied) {
             myRigidbody.velocity = new Vector2(myRigidbody.velocity.x, jumpForce);
+            myAudioSource.PlayOneShot(soundJump);
             gameManager.addJump();
         }
 
@@ -156,6 +160,8 @@ public class PlayerController : MonoBehaviour {
             isBasicAttacking = true;
             GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
             attackSpeedMultiplier = 1.1f;
+
+            myAudioSource.PlayOneShot(soundAttack);
             
             /* update the attack scale */
             loadedBasicAttack.transform.parent = this.gameObject.transform;
@@ -206,8 +212,10 @@ public class PlayerController : MonoBehaviour {
             }
 
             myAnimator.SetTrigger("TB_Attack");
+
+            myAudioSource.PlayOneShot(gameManager.GetTBController().TargetSound(i));
+
             yield return new WaitForEndOfFrame();
-            Debug.Log(myAnimator.GetCurrentAnimatorStateInfo(0).length);
             yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);
 
         }
