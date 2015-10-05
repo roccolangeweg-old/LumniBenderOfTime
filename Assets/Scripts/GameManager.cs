@@ -266,9 +266,6 @@ public class GameManager : MonoBehaviour {
         paused = !paused;
         pauseScreen.enabled = !pauseScreen.enabled;
 
-        Debug.Log(Time.timeScale);
-        Debug.Log(pauseScreen.enabled);
-
         if (pauseScreen.enabled) {
             lastTimescale = Time.timeScale;
             Time.timeScale = 0;
@@ -347,16 +344,12 @@ public class GameManager : MonoBehaviour {
     }
 
     private IEnumerator LoadGameScene() {
-        Debug.Log("LOADING LEVEL");
-
-        
 
         gameLoader = Application.LoadLevelAsync("GameScene");
         gameLoader.allowSceneActivation = false;
 
         yield return gameLoader.isDone;
 
-        Debug.Log("DONE LOADING");
     }
 
     public float RoundedCombo() {

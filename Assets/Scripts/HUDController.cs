@@ -1,11 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using UnityEngine.UI;
+
 public class HUDController : MonoBehaviour {
 
     private Canvas myCanvas;
     private PlayerController player;
     private GameManager gameManager;
+
+    public Text orbText;
+    public Text scoreText;
+    public Text comboText;
 
 
 	// Use this for initialization
@@ -19,6 +25,19 @@ public class HUDController : MonoBehaviour {
             StartCoroutine(RemoveControlsAfterStart());
         }
 	}
+
+    void Update() {
+
+        orbText.text = gameManager.getCollectedOrbs().ToString();
+        scoreText.text = gameManager.getCurrentScore().ToString();
+        
+        if (gameManager.RoundedCombo() >= 2) {
+            comboText.text = gameManager.RoundedCombo().ToString() + "X";
+        } else {
+            comboText.text = "1X";
+        }
+
+    }
 
     /* PUBLIC METHODS */
     public void PlayerJump() {

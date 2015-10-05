@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour {
 
     private bool playerDied;
 
+
+
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
@@ -39,10 +41,10 @@ public class PlayerController : MonoBehaviour {
     public AudioClip soundAttack;
     public AudioClip soundCharge;
 
-
     /* TimeBend vars */
     private bool cameraFollow;
     private Vector3 timeBendPosition;
+    private float timebendCharge;
 
 	// Use this for initialization
 	void Start() {
@@ -55,10 +57,13 @@ public class PlayerController : MonoBehaviour {
         myAnimator = GetComponent<Animator>();
         myAudioSource = GetComponent<AudioSource>();
 
+        timebendCharge = 0;
+
         attackSpeedMultiplier = 1;
 
         cameraFollow = true;
         playerDied = false;
+
 	}
 
     void Update() {
@@ -90,6 +95,7 @@ public class PlayerController : MonoBehaviour {
             if (!isKnockedBack) {
                 myRigidbody.velocity = new Vector2(currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
                 gameManager.addScore(0.1f);
+                ChargeTimebend(0.1f);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
             }
@@ -129,7 +135,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     public void Timebend() {
-        if(!isKnockedBack) {
+        if(!isKnockedBack && timebendCharge == 100) {
             gameManager.GetTBController().EnableTimebendMode();
             myAnimator.SetBool("TimebendActive", true);
             myAudioSource.PlayOneShot(soundCharge);
@@ -228,6 +234,8 @@ public class PlayerController : MonoBehaviour {
         cameraFollow = true;
         transform.position = timeBendPosition;
 
+        timebendCharge = 0;
+
         gameObject.layer = LayerMask.NameToLayer("PlayerInvincible");
         StartCoroutine(Invincible(1));
 
@@ -266,6 +274,19 @@ public class PlayerController : MonoBehaviour {
         }
 
         gameObject.layer = LayerMask.NameToLayer("Player");
+
+    }
+
+    private void ChargeTimebend(float amount) {
+
+        timebendCharge += amount;
+
+        if (ChargeTimebend > 100) {
+            timebendCharge = 100;
+        }
+
+
+
 
     }
     
