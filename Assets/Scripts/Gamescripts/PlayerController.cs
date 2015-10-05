@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour {
 
     public AudioClip soundJump;
     public AudioClip soundAttack;
+    public AudioClip soundCharge;
 
 
     /* TimeBend vars */
@@ -131,6 +132,7 @@ public class PlayerController : MonoBehaviour {
         if(!isKnockedBack) {
             gameManager.GetTBController().EnableTimebendMode();
             myAnimator.SetBool("TimebendActive", true);
+            myAudioSource.PlayOneShot(soundCharge);
         }
     }
 
@@ -212,8 +214,6 @@ public class PlayerController : MonoBehaviour {
             }
 
             myAnimator.SetTrigger("TB_Attack");
-
-            myAudioSource.PlayOneShot(gameManager.GetTBController().TargetSound(i));
 
             yield return new WaitForEndOfFrame();
             yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);

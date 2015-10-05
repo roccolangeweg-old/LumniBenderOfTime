@@ -23,6 +23,7 @@ public class TimebendController : MonoBehaviour {
     private List<Image> createdMarkers;
 
     public List<AudioClip> targetHitSounds;
+    public AudioClip timebendAttack;
 
 	// Use this for initialization
 	void Start() {
@@ -71,6 +72,7 @@ public class TimebendController : MonoBehaviour {
     public void DisableTimebendMode() {
         timebendEnabled = false;
 
+        GetComponent<AudioSource>().PlayOneShot(timebendAttack);
 
         StartCoroutine(gameManager.UpdateTimescale(1f));
 
@@ -105,8 +107,10 @@ public class TimebendController : MonoBehaviour {
                 markerImage.rectTransform.localScale = new Vector3(2f,2f,2f);
                 createdMarkers.Add(markerImage);
 
-
                 remainingTaps--;
+
+                GetComponent<AudioSource>().PlayOneShot(TargetSound(5 - remainingTaps));
+
                 UpdateHUD();
             }
         }
