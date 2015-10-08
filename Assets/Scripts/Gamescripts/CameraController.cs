@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 public class CameraController : MonoBehaviour {
 
-    private GameManager gameManager;
-
     private PlayerController player;
     private Vector3 lastPlayerPosition;
     private float distanceToMove;
@@ -31,8 +29,6 @@ public class CameraController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-
         lastPlayerPosition = new Vector3(player.transform.position.x + 2.5f, player.transform.position.y, transform.position.z);
 
         heartUIs = new List<Image>();
@@ -48,9 +44,10 @@ public class CameraController : MonoBehaviour {
             heartUIs.Add(newImage);
 
             newImage.sprite = heartContainers[0];
-            newImage.rectTransform.anchorMax = new Vector2(0,1);
-            newImage.rectTransform.anchorMin = new Vector2(0,1);
-            newImage.rectTransform.anchoredPosition3D = new Vector3(35 + 35 * i, -30.5f, 0);
+            newImage.transform.SetParent(GameObject.Find("Health").transform);
+            newImage.rectTransform.anchorMax = new Vector2(0.5f,0.5f);
+            newImage.rectTransform.anchorMin = new Vector2(0.5f,0.5f);
+            newImage.rectTransform.anchoredPosition3D = new Vector3(35 + 35 * i, -30, 0);
             newImage.rectTransform.localScale = new Vector3(0.33f,0.33f,1);
         }
     }
@@ -68,9 +65,6 @@ public class CameraController : MonoBehaviour {
                 lastPlayerHealth = player.getCurrentHealth();
                 updateHearts(lastPlayerHealth);
             }
-
-
-
         }
 
 	}

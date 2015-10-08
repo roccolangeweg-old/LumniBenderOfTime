@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour {
     private int highScore;
 
     public float multiplierPercentage;
+
+    private Texture2D everyplayThumbnail;
    
     //Awake is always called before any Start functions
     void Awake() {
@@ -82,6 +84,13 @@ public class GameManager : MonoBehaviour {
         player = FindObjectOfType<PlayerController>();
         tbController = FindObjectOfType<TimebendController>();
 
+        everyplayThumbnail = new Texture2D(250, 130, TextureFormat.ARGB32, false);
+        everyplayThumbnail.wrapMode = TextureWrapMode.Clamp;
+
+        Everyplay.SetTargetFPS(30);
+        Everyplay.SetThumbnailTargetTexture(everyplayThumbnail);
+
+
 	}
 
     void OnLevelWasLoaded() {
@@ -93,6 +102,11 @@ public class GameManager : MonoBehaviour {
         gameLoader = new AsyncOperation();
 
         if (Application.loadedLevelName == "GameScene") {
+
+            if(Everyplay.IsRecordingSupported()) {
+                Everyplay.StartRecording();
+                StartCoroutine(TakeThumbnail());
+            }
 
             pauseScreen = GameObject.Find("PauseCanvas").GetComponent<Canvas>();
             player = FindObjectOfType<PlayerController>();
@@ -114,6 +128,19 @@ public class GameManager : MonoBehaviour {
 
             if (instance == this) {
 
+                Dictionary<string, object> stats = new Dictionary<string, object>();
+
+                stats["score"] = Mathf.RoundToInt(currentScore);
+                stats["orbs"] = collectedOrbs;
+                stats["relics"] = collectedRelics;
+                stats["jumps"] = currentJumps;
+                stats["enemies"] = enemiesDefeated;
+                stats["distance"] = currentDistance.ToString();
+                stats["max_combo"] = currentHighestCombo.ToString();
+
+                Everyplay.SetMetadata(stats);
+                Everyplay.StopRecording();
+
 				ShowAd ();
 
                 totalOrbs += collectedOrbs;
@@ -126,23 +153,7 @@ public class GameManager : MonoBehaviour {
                     highScore = Mathf.RoundToInt(currentScore);
                 }
 
-				Analytics.CustomEvent("Results", new Dictionary<string, object>
-				{
-					{ "score", currentScore },
-					{ "orbs", collectedOrbs },
-					{ "relics", collectedRelics },
-					{ "jumps", currentJumps },
-					{ "enemies", enemiesDefeated },
-					{ "distance", currentDistance }
-
-				});
-
-                GA3.LogEvent("Stats","All","Score", Mathf.RoundToInt(currentScore) );
-                GA3.LogEvent("Stats","All","Orbs Collected",collectedOrbs);
-                GA3.LogEvent("Stats","All","Relics Collected",collectedRelics);
-                GA3.LogEvent("Stats","All","Jump Count", currentJumps);
-                GA3.LogEvent("Stats","All","Defeated Enemies", enemiesDefeated);
-                GA3.LogEvent("Stats","All","Distance Travelled", currentDistance);
+				Analytics.CustomEvent("Results", stats);
 
                 if (highestCombo < currentHighestCombo) {
                     highestCombo = currentHighestCombo;
@@ -269,9 +280,10 @@ public class GameManager : MonoBehaviour {
         if (pauseScreen.enabled) {
             lastTimescale = Time.timeScale;
             Time.timeScale = 0;
-            Debug.Log(Time.timeScale);
+            Everyplay.PauseRecording();
         } else {
             Time.timeScale = lastTimescale;
+            Everyplay.ResumeRecording();
         }
             
     }
@@ -285,6 +297,7 @@ public class GameManager : MonoBehaviour {
 
     public void ReturnToMain() {
         Time.timeScale = 1;
+        Everyplay.StopRecording();
         Application.LoadLevel("MainScene");
     }
 
@@ -334,23 +347,21 @@ public class GameManager : MonoBehaviour {
     }
 
     private void UpdateComboMeter() {
-
         currentCombo += 1 / (RoundedCombo() + 1);
 
         if (RoundedCombo() > currentHighestCombo) {
             currentHighestCombo = (int) RoundedCombo();
         }
-    
     }
 
     private IEnumerator LoadGameScene() {
-
         gameLoader = Application.LoadLevelAsync("GameScene");
         gameLoader.allowSceneActivation = false;
 
         yield return gameLoader.isDone;
-
     }
+
+
 
     public float RoundedCombo() {
         return Mathf.Floor(currentCombo);
@@ -362,6 +373,15 @@ public class GameManager : MonoBehaviour {
 
     public TimebendController GetTBController() {
         return tbController;
+    }
+
+    private IEnumerator TakeThumbnail() {
+        yield return new WaitForSeconds(5 * Time.timeScale); 
+        Everyplay.TakeThumbnail();    
+    }
+
+    public Texture2D EveryplayThumbnail() {
+        return everyplayThumbnail;
     }
 
 }

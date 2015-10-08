@@ -30,5 +30,7 @@
     </activity>
     <activity android:name="com.facebook.FacebookContentProvider" android:authorities="com.facebook.app.FacebookContentProvider170688799936108" android:exported="true">
     </activity>
+    <activity android:name="com.facebook.FacebookContentProvider" android:authorities="com.facebook.app.FacebookContentProvider170688799936108" android:exported="true">
+    </activity>
   </application>
 </manifest>

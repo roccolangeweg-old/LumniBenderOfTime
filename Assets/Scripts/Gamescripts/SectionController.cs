@@ -16,10 +16,8 @@ public class SectionController : MonoBehaviour {
 	void Update () {
 	    
         if (transform.position.x < destructionPoint.transform.position.x) {
-            Destroy(gameObject);
+            ObjectPooler.instance.AddToPool(gameObject);
         }
-
-
 	}
 
     public float getSectionWidth() {

@@ -42,7 +42,8 @@ public class AreaGenerator : MonoBehaviour {
                 this.transform.position = new Vector3(this.transform.position.x + currentSectionWidth, this.transform.position.y, this.transform.position.z);
                 currentSectionWidth = sectionWidths[sectionSelector];
 
-                Instantiate (sections[sectionSelector], this.transform.position, this.transform.rotation);
+                GameObject newSection = ObjectPooler.instance.GetObjectByName(sections[sectionSelector].name, true);
+                newSection.transform.position = this.transform.position;
 
         }
 	}

@@ -10,8 +10,8 @@ public class ParallaxLayer : MonoBehaviour {
     private bool lastGenerated = true;
 
     void Start() {
-        parallaxController = FindObjectOfType<ParallaxController>();
-        parallaxController.AddLayerToList(this);
+        //parallaxController = FindObjectOfType<ParallaxController>();
+        //parallaxController.AddLayerToList(this);
     }
 
 

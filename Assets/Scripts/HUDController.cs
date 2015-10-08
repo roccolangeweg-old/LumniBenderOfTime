@@ -2,6 +2,7 @@
 using System.Collections;
 
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class HUDController : MonoBehaviour {
 
@@ -13,28 +14,76 @@ public class HUDController : MonoBehaviour {
     public Text scoreText;
     public Text comboText;
 
+    public Sprite[] timebendIcons;
+    public Image timebendIcon;
+
+    private GameObject loginWithFBButton;
+
+    [ContextMenu ("Sort Frames By Name")]
+    void DoSortFrames() {
+        System.Array.Sort(timebendIcons, (a,b) => a.name.CompareTo(b.name));
+    }
 
 	// Use this for initialization
 	void Start () {
         myCanvas = GetComponent<Canvas>();
 
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameManager.instance;
         player = FindObjectOfType<PlayerController>();
 
         if (Application.loadedLevelName == "GameScene") {
             StartCoroutine(RemoveControlsAfterStart());
+        } else if (Application.loadedLevelName == "MainScene") {
+            loginWithFBButton = GameObject.Find("ConnectButton");
         }
+
+
 	}
 
     void Update() {
 
-        orbText.text = gameManager.getCollectedOrbs().ToString();
-        scoreText.text = gameManager.getCurrentScore().ToString();
-        
-        if (gameManager.RoundedCombo() >= 2) {
-            comboText.text = gameManager.RoundedCombo().ToString() + "X";
-        } else {
-            comboText.text = "1X";
+        if (Application.loadedLevelName == "GameScene") {
+
+            orbText.text = gameManager.getCollectedOrbs().ToString();
+            scoreText.text = gameManager.getCurrentScore().ToString();
+            
+            if (gameManager.RoundedCombo() >= 2) {
+                comboText.text = gameManager.RoundedCombo().ToString();
+            } else {
+                comboText.text = "1";
+            }
+
+
+            if (player.GetTimebendCharge() < 100) {
+
+                int currentImage = Mathf.RoundToInt(player.GetTimebendCharge() / 2) - 1;
+
+                if (currentImage < 0) {
+                    currentImage = 1;
+                }
+
+                timebendIcon.GetComponent<Animator>().enabled = false;
+                timebendIcon.GetComponent<Animator>().SetBool("Ready", false);
+                timebendIcon.sprite = timebendIcons [currentImage];
+            
+            } else {
+                timebendIcon.GetComponent<Animator>().enabled = true;
+                timebendIcon.GetComponent<Animator>().SetBool("Ready", true);
+            }
+
+            if (!timebendIcon.enabled && player.GetTimebendCharge() < 100) {
+                timebendIcon.enabled = true;
+            }
+
+
+        } else if (Application.loadedLevelName == "MainScene") {
+
+            if(Facebook.Unity.FB.IsLoggedIn) {
+                loginWithFBButton.SetActive(false);
+            } else {
+                loginWithFBButton.SetActive(true);
+            }
+
         }
 
     }
@@ -49,11 +98,22 @@ public class HUDController : MonoBehaviour {
     }
 
     public void PlayerTimebend() {
-        player.Timebend();
+        if (!player.IsHurt() && player.GetTimebendCharge() == 100) {
+            player.Timebend();
+            timebendIcon.enabled = false;
+        }
     }
 
     public void StartGame() {
         gameManager.StartGame();
+    }
+
+    public void OpenReplays() {
+        Everyplay.Show();
+    }
+
+    public void FacebookLogin() {
+        FindObjectOfType<FacebookManager>().FBLogin();
     }
 
 

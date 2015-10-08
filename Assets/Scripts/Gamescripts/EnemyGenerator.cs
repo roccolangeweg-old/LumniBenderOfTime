@@ -18,31 +18,29 @@ public class EnemyGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         spawnAllowed = true;
-        InvokeRepeating("PrepareEnemySpawn", 2f, minSecondsBetweenEnemies);
+
+        StartCoroutine(SpawnEnemy(0.5f, 1));
 	}
-	
-    private void PrepareEnemySpawn() {
 
-        float timeTillSpawn = Random.Range(0f, 1f);
-        GameObject enemy = enemyList[Random.Range(0, enemyList.Count)];
-        if (transform.position.x - lastSpawnPosition > distanceBetweenSpawn && spawnAllowed) {
-            StartCoroutine(spawnEnemy(enemy, timeTillSpawn));
+    private IEnumerator SpawnEnemy(float timeTillSpawn, int amountOfEnemies) {
+
+        yield return new WaitForSeconds(timeTillSpawn);
+
+
+
+        for (int i = 0; i < amountOfEnemies; i++) {
+            if (spawnAllowed) {
+                GameObject newEnemy = (GameObject)Instantiate(enemyList [Random.Range(0, enemyList.Count)]);
+                if (newEnemy.GetComponent<EnemyController>().isAerialType) {
+                    newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
+                } else {
+                    newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
+                }
+                yield return new WaitForSeconds(0.2f);
+            }
         }
-    }
 
-    private IEnumerator spawnEnemy(GameObject enemy, float time) {
-
-        yield return new WaitForSeconds(time);
-
-        GameObject newEnemy = (GameObject) Instantiate(enemy);
-
-        if (newEnemy.GetComponent<EnemyController>().isAerialType) {
-            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
-        } else {
-            newEnemy.transform.position = new Vector3(transform.position.x, transform.position.y + 1, transform.position.z);
-        }
-        lastSpawnPosition = transform.position.x;
-
+        StartCoroutine(SpawnEnemy(Random.Range(0.5f,1.5f),Mathf.RoundToInt(Random.Range(1,3 * GameManager.instance.RoundedCombo() / 2))));
     }
 
     public void loadEnemies(List<GameObject> enemies) {

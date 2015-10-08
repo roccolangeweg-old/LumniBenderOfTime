@@ -36,14 +36,19 @@ public class ParallaxController : MonoBehaviour {
 
                 ParallaxLayer layer = backgrounds[i];
 
-                layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);
-
                 if(layer.isLastGenerated() && layer.transform.position.x <= generationPoint.transform.position.x) {
                     layer.setLastGenerated(false);
-
-                    GameObject newLayer = (GameObject) Instantiate(layer.gameObject);
+                    
+                    Debug.Log(layer.name);
+                    Debug.Log(layer.transform.position.x);
+                    
+                    GameObject newLayer = AddBGLayer(layer.gameObject);
                     newLayer.transform.position = new Vector3(layer.transform.position.x + 32.0f, layer.transform.position.y, layer.transform.position.z);
+                    
+                    Debug.Log(newLayer.transform.position.x);
                 }
+
+                layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);
 
                 if(layer.transform.position.x <= destructionPoint.transform.position.x) {
                     layersToDelete.Add(layer);
@@ -53,7 +58,7 @@ public class ParallaxController : MonoBehaviour {
 
             for (int i=0; i < layersToDelete.Count; i++) {
                 backgrounds.Remove(layersToDelete[i]);
-                Destroy(layersToDelete[i].gameObject);
+                ObjectPooler.instance.AddToPool(layersToDelete[i].gameObject);
             }
 
         }
@@ -69,14 +74,21 @@ public class ParallaxController : MonoBehaviour {
     public void loadBackgrounds(List<GameObject> newBackgrounds) {
 
         for (int i=0; i < backgrounds.Count; i++) {
-            Destroy(backgrounds[i].gameObject);
+            ObjectPooler.instance.AddToPool(backgrounds[i].gameObject);
         }
 
         backgrounds = new List<ParallaxLayer>();
 
         for (int i=0; i < newBackgrounds.Count; i++) {
-        
-            Instantiate(newBackgrounds[i], new Vector3(gameCamera.transform.position.x, gameCamera.transform.position.y + 1, newBackgrounds[i].transform.position.z + 5), newBackgrounds[i].transform.rotation);
+            GameObject newLayer = AddBGLayer(newBackgrounds[i]);
+            newLayer.transform.position = new Vector3(gameCamera.transform.position.x, gameCamera.transform.position.y + 1, newLayer.transform.position.z + 5);
         }
+    }
+
+    private GameObject AddBGLayer(GameObject layer) {
+        GameObject newBackground = ObjectPooler.instance.GetObjectByName(layer.name, true);
+        newBackground.GetComponent<ParallaxLayer>().setLastGenerated(true);
+        AddLayerToList(newBackground.GetComponent<ParallaxLayer>());
+        return newBackground;
     }
 }

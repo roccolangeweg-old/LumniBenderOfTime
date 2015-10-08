@@ -32,14 +32,13 @@ public class PlayerController : MonoBehaviour {
 
     private bool playerDied;
 
-
-
     public LayerMask groundLayer;
     public GameObject basicAttack;
 
     public AudioClip soundJump;
     public AudioClip soundAttack;
     public AudioClip soundCharge;
+    public AudioClip soundWarp;
 
     /* TimeBend vars */
     private bool cameraFollow;
@@ -95,7 +94,7 @@ public class PlayerController : MonoBehaviour {
             if (!isKnockedBack) {
                 myRigidbody.velocity = new Vector2(currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
                 gameManager.addScore(0.1f);
-                ChargeTimebend(0.1f);
+                ChargeTimebend(0.03f * gameManager.RoundedCombo() * 2);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
             }
@@ -183,6 +182,14 @@ public class PlayerController : MonoBehaviour {
         return cameraFollow;
     }
 
+    public float GetTimebendCharge() {
+        return timebendCharge;
+    }
+
+    public bool IsHurt() {
+        return isKnockedBack;
+    }
+
     /* CUSTOM PRIVATE FUNCTIONS */
 
     private void knockPlayerBack() {
@@ -210,6 +217,12 @@ public class PlayerController : MonoBehaviour {
 
         timeBendPosition = transform.position;
 
+        if (targets.Count > 0) {
+            myAnimator.SetTrigger("TimebendWarpStart");
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);
+        }
+
         for (int i = 0; i < targets.Count; i++) {
             EnemyController targetController = targets[i].GetComponentInParent<EnemyController>();
 
@@ -220,6 +233,7 @@ public class PlayerController : MonoBehaviour {
             }
 
             myAnimator.SetTrigger("TB_Attack");
+            myAudioSource.PlayOneShot(soundWarp);
 
             yield return new WaitForEndOfFrame();
             yield return new WaitForSeconds(myAnimator.GetCurrentAnimatorStateInfo(0).length * Time.timeScale);
@@ -281,7 +295,7 @@ public class PlayerController : MonoBehaviour {
 
         timebendCharge += amount;
 
-        if (ChargeTimebend > 100) {
+        if (timebendCharge > 100) {
             timebendCharge = 100;
         }
 

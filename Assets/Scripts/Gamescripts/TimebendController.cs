@@ -41,7 +41,7 @@ public class TimebendController : MonoBehaviour {
 
             timeSlider.value -= (Time.deltaTime / Time.timeScale) * timeMultiplier;
 
-            if ((timeSlider.value <= 0 || remainingTaps == 0) && !sequencePlaying) {
+            if ((timeSlider.value <= 0) && !sequencePlaying) {
                 PlayTimebendSequence();
 
             }

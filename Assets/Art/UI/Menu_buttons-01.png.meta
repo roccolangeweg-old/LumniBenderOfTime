@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: fcfd4cc236f20e345930f495e31a237f
-timeCreated: 1443115788
+timeCreated: 1444140364
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -14,6 +14,14 @@ TextureImporter:
     21300014: Menu_buttons-01_7
     21300016: Menu_buttons-01_8
     21300018: Menu_buttons-01_9
+    21300020: Menu_buttons-01_10
+    21300022: Menu_buttons-01_11
+    21300024: Menu_buttons-01_12
+    21300026: Menu_buttons-01_13
+    21300028: Menu_buttons-01_14
+    21300030: Menu_buttons-01_15
+    21300032: Menu_buttons-01_16
+    21300034: Menu_buttons-01_17
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -47,6 +55,7 @@ TextureImporter:
   lightmap: 0
   rGBM: 0
   compressionQuality: 50
+  allowsAlphaSplitting: 0
   spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
@@ -63,57 +72,57 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 384
+        y: 768
         width: 256
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_1
       rect:
         serializedVersion: 2
         x: 256
-        y: 384
+        y: 768
         width: 256
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_2
       rect:
         serializedVersion: 2
         x: 512
-        y: 384
+        y: 768
         width: 256
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_3
       rect:
         serializedVersion: 2
         x: 768
-        y: 384
+        y: 768
         width: 256
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_4
       rect:
         serializedVersion: 2
         x: 1024
-        y: 384
+        y: 768
         width: 256
         height: 384
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
     - name: Menu_buttons-01_5
       rect:
         serializedVersion: 2
         x: 0
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -123,7 +132,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 256
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -133,7 +142,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 512
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -143,7 +152,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 768
-        y: 0
+        y: 384
         width: 256
         height: 384
       alignment: 0
@@ -153,11 +162,91 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1024
+        y: 384
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_10
+      rect:
+        serializedVersion: 2
+        x: 0
         y: 0
         width: 256
         height: 384
       alignment: 0
       pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_11
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_12
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_13
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_14
+      rect:
+        serializedVersion: 2
+        x: 1024
+        y: 0
+        width: 256
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_15
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 768
+        width: 255
+        height: 384
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_16
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 384
+        width: 255
+        height: 384
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Menu_buttons-01_17
+      rect:
+        serializedVersion: 2
+        x: 1280
+        y: 0
+        width: 255
+        height: 384
+      alignment: 0
+      pivot: {x: .5, y: .5}
       border: {x: 0, y: 0, z: 0, w: 0}
   spritePackingTag: 
   userData: 
