@@ -10,12 +10,15 @@ public class HUDController : MonoBehaviour {
     private PlayerController player;
     private GameManager gameManager;
 
+    public Canvas helpCanvas;
+
     public Text orbText;
     public Text scoreText;
     public Text comboText;
 
     public Sprite[] timebendIcons;
     public Image timebendIcon;
+    public int currentTimebendImage;
 
     private GameObject loginWithFBButton;
 
@@ -32,6 +35,11 @@ public class HUDController : MonoBehaviour {
         player = FindObjectOfType<PlayerController>();
 
         if (Application.loadedLevelName == "GameScene") {
+            //if(gameManager.ShowHelpOnStartup()) {
+                helpCanvas.enabled = true;
+                Time.timeScale = 0;
+            //}
+
             StartCoroutine(RemoveControlsAfterStart());
         } else if (Application.loadedLevelName == "MainScene") {
             loginWithFBButton = GameObject.Find("ConnectButton");
@@ -62,9 +70,13 @@ public class HUDController : MonoBehaviour {
                     currentImage = 1;
                 }
 
-                timebendIcon.GetComponent<Animator>().enabled = false;
-                timebendIcon.GetComponent<Animator>().SetBool("Ready", false);
-                timebendIcon.sprite = timebendIcons [currentImage];
+                if(currentTimebendImage != currentImage) {
+
+                    timebendIcon.GetComponent<Animator>().enabled = false;
+                    timebendIcon.GetComponent<Animator>().SetBool("Ready", false);
+                    timebendIcon.sprite = timebendIcons [currentImage];
+                
+                }
             
             } else {
                 timebendIcon.GetComponent<Animator>().enabled = true;
@@ -114,6 +126,11 @@ public class HUDController : MonoBehaviour {
 
     public void FacebookLogin() {
         FindObjectOfType<FacebookManager>().FBLogin();
+    }
+
+    public void CloseHelp() {
+        helpCanvas.enabled = false;
+        Time.timeScale = 1;
     }
 
 

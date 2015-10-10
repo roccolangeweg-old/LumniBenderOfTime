@@ -61,11 +61,17 @@ public class ObjectPooler : MonoBehaviour {
                     pooledObject.transform.parent = null;
                     pooledObject.SetActive(true);
 
+                    if(pooledObject.tag == "Enemy") {
+                        pooledObject.GetComponent<EnemyController>().RestoreVariables();
+                    }
+                    
                     return pooledObject;
+
                 } else if(allowLoadNew) {
                     GameObject loadedObj = (GameObject) Instantiate(objectPrefabs[i]);
                     loadedObj.name = objectPrefabs[i].name;
                     AddToPool(loadedObj);
+
                     return GetObjectByName(objectName, allowLoadNew);
                 }
 
@@ -82,6 +88,7 @@ public class ObjectPooler : MonoBehaviour {
                 obj.SetActive(false);
                 obj.transform.parent = this.transform;
                 pooledObjects [i].Add(obj);
+
                 return;
             }
         }

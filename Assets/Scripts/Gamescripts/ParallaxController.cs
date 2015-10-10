@@ -39,13 +39,9 @@ public class ParallaxController : MonoBehaviour {
                 if(layer.isLastGenerated() && layer.transform.position.x <= generationPoint.transform.position.x) {
                     layer.setLastGenerated(false);
                     
-                    Debug.Log(layer.name);
-                    Debug.Log(layer.transform.position.x);
-                    
                     GameObject newLayer = AddBGLayer(layer.gameObject);
                     newLayer.transform.position = new Vector3(layer.transform.position.x + 32.0f, layer.transform.position.y, layer.transform.position.z);
-                    
-                    Debug.Log(newLayer.transform.position.x);
+
                 }
 
                 layer.transform.position = new Vector3(layer.transform.position.x + (deltaPositionX * layer.parallaxSpeedX), layer.transform.position.y + (deltaPositionY * layer.parallaxSpeedY), layer.transform.position.z);

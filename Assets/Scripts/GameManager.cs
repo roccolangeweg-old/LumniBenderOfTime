@@ -74,6 +74,11 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         healthMultiplier = 1;
 
+
+        if (PlayerPrefs.GetInt("TotalGames") < 1) {
+            PlayerPrefs.SetInt("ShowHelpOnStartup", 1);
+        }
+
         totalOrbs = PlayerPrefs.GetInt("Orbs");
         totalRelics = PlayerPrefs.GetInt("Relics");
         totalDistance = PlayerPrefs.GetInt("TotalDistance");
@@ -127,6 +132,8 @@ public class GameManager : MonoBehaviour {
         } else if (Application.loadedLevelName == "ScoreScene") {
 
             if (instance == this) {
+
+                PlayerPrefs.SetInt("TotalGames", PlayerPrefs.GetInt("TotalGames") + 1);
 
                 Dictionary<string, object> stats = new Dictionary<string, object>();
 
@@ -195,6 +202,10 @@ public class GameManager : MonoBehaviour {
         }
         
 	}
+
+    public bool ShowHelpOnStartup() {
+        return PlayerPrefs.GetInt("ShowHelpOnStartup")==1?true:false;
+    }
 
     public void playerDied() {
         currentDistance = (int) Mathf.Round(player.transform.position.x - startingDistance);

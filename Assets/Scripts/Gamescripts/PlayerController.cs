@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour {
     public float baseSpeed;
     private float currentSpeed;
     private float attackSpeedMultiplier;
+    private float lastPositionX;
 
     public float knockbackAmplifier;
     public float knockbackLength;
@@ -93,7 +94,9 @@ public class PlayerController : MonoBehaviour {
             /* check if player is allowed to move */
             if (!isKnockedBack) {
                 myRigidbody.velocity = new Vector2(currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())), myRigidbody.velocity.y);
-                gameManager.addScore(0.1f);
+                if(transform.position.x > lastPositionX) {
+                    gameManager.addScore(0.1f);
+                }
                 ChargeTimebend(0.03f * gameManager.RoundedCombo() * 2);
             } else if (isKnockedBack && grounded && knockbackTime <= 0) {      
                 isKnockedBack = false;
@@ -105,6 +108,8 @@ public class PlayerController : MonoBehaviour {
                 attackSpeedMultiplier = 1;
             }
     
+            lastPositionX = transform.position.x;
+
             /* set animator values */
             myAnimator.SetFloat("Speed", myRigidbody.velocity.x);
             myAnimator.SetBool("BasicAttacking", isBasicAttacking);
@@ -165,14 +170,16 @@ public class PlayerController : MonoBehaviour {
         /* check if attack is possible, then attack */
         if (!isBasicAttacking && !playerDied) {
             isBasicAttacking = true;
-            GameObject loadedBasicAttack = (GameObject) Instantiate(basicAttack, new Vector3(transform.position.x + 0.5f, transform.position.y + 0.25f, transform.position.z + 1f), Quaternion.Euler(new Vector3(0, 0, 0)));
+
+            basicAttack.SetActive(true);
+            basicAttack.GetComponent<Animator>().SetTrigger("PlayAttack");
+
             attackSpeedMultiplier = 1.1f;
 
             myAudioSource.PlayOneShot(soundAttack);
             
             /* update the attack scale */
-            loadedBasicAttack.transform.parent = this.gameObject.transform;
-            loadedBasicAttack.transform.localScale = new Vector3(2f, 2f, 1f);
+            basicAttack.transform.localScale = new Vector3(2f, 2f, 1f);
 
         }
 

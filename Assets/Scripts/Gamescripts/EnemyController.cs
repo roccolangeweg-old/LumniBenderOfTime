@@ -32,6 +32,8 @@ public class EnemyController : MonoBehaviour {
     public PhysicsMaterial2D deathMaterial;
     public GameObject explosion;
 
+    private Transform startTransform;
+
 	// Use this for initialization
 	void Start () {
         gameManager = FindObjectOfType<GameManager>().GetComponent<GameManager>();
@@ -40,7 +42,8 @@ public class EnemyController : MonoBehaviour {
         destructionPoint = GameObject.Find("DestructionPoint");
 
         player = FindObjectOfType<PlayerController>();
-
+    
+        isKnockedBack = false;
         isAlive = true;
         isAttacking = false;
 
@@ -51,13 +54,48 @@ public class EnemyController : MonoBehaviour {
         if (isAerialType) {
             myRigidbody.isKinematic = true;
         }
+
+        startTransform = transform;
 	}
+
+    public void RestoreVariables() {
+        currentHealth = baseHealth;
+
+        if (startTransform != null) {
+            transform.position = startTransform.position;
+            transform.rotation = new Quaternion();;
+        }
+
+        isKnockedBack = false;
+        isAlive = true;
+        isAttacking = false;
+
+        if (isAerialType) {
+            GetComponent<Rigidbody2D>().isKinematic = true;
+        } else {
+            if(myRigidbody != null) {
+                Debug.Log("SETTING " + gameObject.name + " TO NON-KINEMATIC");
+                GetComponent<Rigidbody2D>().isKinematic = false;
+                Debug.Log(GetComponent<Rigidbody2D>().isKinematic);
+            }
+        }
+
+        gameObject.layer = LayerMask.NameToLayer("Enemies");
+        transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("Enemies");
+
+        if (myCollider != null) {
+            myCollider.sharedMaterial = null;
+            myCollider.isTrigger = false;
+        }
+
+        //myRigidbody.velocity = new Vector2(0, 0);
+    }
 	
 	// Update is called once per frame
 	void FixedUpdate () {
 
         if (transform.position.x < destructionPoint.transform.position.x) {
-            Destroy(gameObject);
+            ObjectPooler.instance.AddToPool(gameObject);
         }
 
         if (isAlive) {
@@ -70,7 +108,7 @@ public class EnemyController : MonoBehaviour {
                     isAttacking = true;
                 }
             } else {
-                if(player.transform.position.x + 3 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
+                if(player.transform.position.x + 4 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
                     isAttacking = true;
                 }
             }
@@ -80,7 +118,10 @@ public class EnemyController : MonoBehaviour {
                 myRigidbody.velocity = new Vector2(-moveSpeed, myRigidbody.velocity.y);
             } else if (isKnockedBack && knockbackTime <= 0) {      
                 isKnockedBack = false;
-                myRigidbody.isKinematic = true;
+
+                if(isAerialType) {
+                    myRigidbody.isKinematic = true;
+                }
             } else if (isAttacking && myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Attack") && myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
                 transform.position = myAnimator.gameObject.transform.position;
                 isAttacking = false;
@@ -148,7 +189,7 @@ public class EnemyController : MonoBehaviour {
 
 
         yield return new WaitForSeconds(3);
-        Destroy(gameObject);
+        ObjectPooler.instance.AddToPool(gameObject);
 
     }
 
@@ -165,12 +206,13 @@ public class EnemyController : MonoBehaviour {
         currentHealth -= damage;
         isKnockedBack = true;
         knockbackTime = knockbackLength;
+        isAttacking = false;
 
         if (isAerialType) {
             myAnimator.gameObject.transform.position = transform.position;
         }
 
-        myRigidbody.velocity = new Vector2(10,3);
+        myRigidbody.velocity = new Vector2(10,1.5f * knockbackAmplifier);
 
 
     }
