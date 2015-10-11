@@ -15,6 +15,7 @@ public class ScoreScript : MonoBehaviour {
     public Text comboTxt;
 
     public Text scoreTxt;
+    public Text highTxt;
 
     public Text totalOrbTxt;
 
@@ -35,6 +36,7 @@ public class ScoreScript : MonoBehaviour {
         comboTxt.text = gameManager.getCurrentHighestCombo().ToString() + " x";
 
         scoreTxt.text = "GAME OVER! YOU SCORED " + gameManager.getCurrentScore().ToString() + " POINTS";
+        highTxt.text = "CURRENT HIGHSCORE: " + gameManager.GetHighscore();
         totalOrbTxt.text = previousOrbs.ToString();
 
         thumbnail.sprite = Sprite.Create(gameManager.EveryplayThumbnail(), new Rect(0, 0, gameManager.EveryplayThumbnail().width, gameManager.EveryplayThumbnail().height), new Vector2(0.5f, 0.5f));

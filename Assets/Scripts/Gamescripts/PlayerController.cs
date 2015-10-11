@@ -107,7 +107,12 @@ public class PlayerController : MonoBehaviour {
                 isBasicAttacking = false;
                 attackSpeedMultiplier = 1;
             }
-    
+
+            /* prevent strange collisions moving the rigidbody at unrealistic speeds */
+            if(myRigidbody.velocity.x > currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())) * 1.1f) {
+                myRigidbody.velocity = new Vector2(currentSpeed * attackSpeedMultiplier * (1 + (0.10f * gameManager.RoundedCombo())) * 1.1f, myRigidbody.velocity.y);
+            }
+
             lastPositionX = transform.position.x;
 
             /* set animator values */
@@ -195,6 +200,10 @@ public class PlayerController : MonoBehaviour {
 
     public bool IsHurt() {
         return isKnockedBack;
+    }
+
+    public void ToggleAnimator(bool enabled) {
+        myAnimator.enabled = enabled;
     }
 
     /* CUSTOM PRIVATE FUNCTIONS */

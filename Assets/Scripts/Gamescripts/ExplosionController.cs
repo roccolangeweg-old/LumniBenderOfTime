@@ -17,7 +17,7 @@ public class ExplosionController : MonoBehaviour {
         if (myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Explosion_Ground") || myAnimator.GetCurrentAnimatorStateInfo(0).IsName("Explosion_Aerial")) {
 
             if (myAnimator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !myAnimator.IsInTransition(0)) {
-                Destroy(gameObject);
+                ObjectPooler.instance.AddToPool(gameObject);
             }
        
         }
@@ -25,9 +25,9 @@ public class ExplosionController : MonoBehaviour {
 
     public void StartExplosion(bool aerial) {
         if (aerial) {
-            GetComponent<Animator>().SetBool("Aerial", true);
+            GetComponent<Animator>().SetTrigger("Aerial");
         } else {
-            GetComponent<Animator>().SetBool("Ground", true);
+            GetComponent<Animator>().SetTrigger("Ground");
         }
     }
 }

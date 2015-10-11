@@ -11,6 +11,7 @@ public class HUDController : MonoBehaviour {
     private GameManager gameManager;
 
     public Canvas helpCanvas;
+    private bool allowSkipHelp;
 
     public Text orbText;
     public Text scoreText;
@@ -37,7 +38,9 @@ public class HUDController : MonoBehaviour {
         if (Application.loadedLevelName == "GameScene") {
             //if(gameManager.ShowHelpOnStartup()) {
                 helpCanvas.enabled = true;
-                Time.timeScale = 0;
+                Time.timeScale = 0.000001f;
+                allowSkipHelp = false;
+                StartCoroutine(WaitForHelpScreen());
             //}
 
             StartCoroutine(RemoveControlsAfterStart());
@@ -73,7 +76,6 @@ public class HUDController : MonoBehaviour {
                 if(currentTimebendImage != currentImage) {
 
                     timebendIcon.GetComponent<Animator>().enabled = false;
-                    timebendIcon.GetComponent<Animator>().SetBool("Ready", false);
                     timebendIcon.sprite = timebendIcons [currentImage];
                 
                 }
@@ -90,11 +92,13 @@ public class HUDController : MonoBehaviour {
 
         } else if (Application.loadedLevelName == "MainScene") {
 
+          /* code for later release
             if(Facebook.Unity.FB.IsLoggedIn) {
                 loginWithFBButton.SetActive(false);
             } else {
                 loginWithFBButton.SetActive(true);
             }
+         */
 
         }
 
@@ -129,8 +133,14 @@ public class HUDController : MonoBehaviour {
     }
 
     public void CloseHelp() {
-        helpCanvas.enabled = false;
-        Time.timeScale = 1;
+        if (allowSkipHelp) {
+            helpCanvas.enabled = false;
+            Time.timeScale = 1;
+        }
+    }
+
+    public void PauseGame() {
+        gameManager.UpdatePauseState();
     }
 
 
@@ -138,5 +148,10 @@ public class HUDController : MonoBehaviour {
     private IEnumerator RemoveControlsAfterStart() {
         yield return new WaitForSeconds(3);
         myCanvas.transform.FindChild("Controls").GetComponent<Animator>().SetBool("FadeOut", true);
+    }
+
+    private IEnumerator WaitForHelpScreen() {
+        yield return new WaitForSeconds(1 * Time.timeScale);
+        allowSkipHelp = true;
     }
 }

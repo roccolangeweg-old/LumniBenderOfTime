@@ -86,6 +86,8 @@ public class GameManager : MonoBehaviour {
         totalEnemiesDefeated = PlayerPrefs.GetInt("EnemiesDefeated");
         totalJumps = PlayerPrefs.GetInt("Jumps");
 
+        highScore = PlayerPrefs.GetInt("Highscore");
+
         player = FindObjectOfType<PlayerController>();
         tbController = FindObjectOfType<TimebendController>();
 
@@ -148,7 +150,7 @@ public class GameManager : MonoBehaviour {
                 Everyplay.SetMetadata(stats);
                 Everyplay.StopRecording();
 
-				ShowAd ();
+				//ShowAd ();
 
                 totalOrbs += collectedOrbs;
                 totalRelics += collectedRelics;
@@ -158,6 +160,7 @@ public class GameManager : MonoBehaviour {
 
                 if(Mathf.RoundToInt(currentScore) > highScore) {
                     highScore = Mathf.RoundToInt(currentScore);
+                    PlayerPrefs.SetInt("Highscore", highScore);
                 }
 
 				Analytics.CustomEvent("Results", stats);
@@ -393,6 +396,10 @@ public class GameManager : MonoBehaviour {
 
     public Texture2D EveryplayThumbnail() {
         return everyplayThumbnail;
+    }
+
+    public int GetHighscore() {
+        return highScore;
     }
 
 }

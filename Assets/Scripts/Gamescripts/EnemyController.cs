@@ -63,7 +63,7 @@ public class EnemyController : MonoBehaviour {
 
         if (startTransform != null) {
             transform.position = startTransform.position;
-            transform.rotation = new Quaternion();;
+            transform.rotation = new Quaternion();
         }
 
         isKnockedBack = false;
@@ -73,11 +73,7 @@ public class EnemyController : MonoBehaviour {
         if (isAerialType) {
             GetComponent<Rigidbody2D>().isKinematic = true;
         } else {
-            if(myRigidbody != null) {
-                Debug.Log("SETTING " + gameObject.name + " TO NON-KINEMATIC");
-                GetComponent<Rigidbody2D>().isKinematic = false;
-                Debug.Log(GetComponent<Rigidbody2D>().isKinematic);
-            }
+            GetComponent<Rigidbody2D>().isKinematic = false;
         }
 
         gameObject.layer = LayerMask.NameToLayer("Enemies");
@@ -104,11 +100,11 @@ public class EnemyController : MonoBehaviour {
             knockbackTime -= Time.deltaTime;
 
             if(isAerialType) {
-                if(player.transform.position.x + 5 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
+                if(player.transform.position.x + 5 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking && !isKnockedBack) {
                     isAttacking = true;
                 }
             } else {
-                if(player.transform.position.x + 4 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking) {
+                if(player.transform.position.x + 4 >= transform.position.x && transform.position.x > player.transform.position.x && !isAttacking && !isKnockedBack) {
                     isAttacking = true;
                 }
             }
@@ -142,7 +138,8 @@ public class EnemyController : MonoBehaviour {
                 StartCoroutine(DestroyEnemyRoutine(1));
 
                 /* create explosion on defeated enemy location */
-                GameObject newExplosion = (GameObject) Instantiate(explosion, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);  
+                GameObject newExplosion = ObjectPooler.instance.GetObjectByName(explosion.name, true);
+                newExplosion.transform.position = transform.position;
                 newExplosion.gameObject.GetComponent<ExplosionController>().StartExplosion(isAerialType);
 
                 gameManager.addOrbs(Random.Range(Mathf.FloorToInt(orbsRewarded * 0.50f),orbsRewarded));
@@ -155,6 +152,12 @@ public class EnemyController : MonoBehaviour {
                     this.myRigidbody.velocity = new Vector2(12, 6);
                 }
             }
+
+            /* prevent strange collisions moving the rigidbody at unrealistic speeds */
+            if(myRigidbody.velocity.x > moveSpeed * 15) {
+                myRigidbody.velocity = new Vector2(moveSpeed * 15, myRigidbody.velocity.y);
+            }
+
 
             /* set enemy animator states */
             myAnimator.SetBool("Alive", isAlive);
@@ -185,8 +188,6 @@ public class EnemyController : MonoBehaviour {
 
         /* put it in front of the forground so it doesn't dissapear behind it */
         transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 3);
-
-
 
         yield return new WaitForSeconds(3);
         ObjectPooler.instance.AddToPool(gameObject);
