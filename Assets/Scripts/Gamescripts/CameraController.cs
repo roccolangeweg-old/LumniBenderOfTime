@@ -53,7 +53,7 @@ public class CameraController : MonoBehaviour {
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
         if (player.GetCameraFollow()) {
 
             distanceToMove = (player.transform.position.x + 2.5f) - lastPlayerPosition.x;

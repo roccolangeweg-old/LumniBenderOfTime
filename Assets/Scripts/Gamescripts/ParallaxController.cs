@@ -23,7 +23,7 @@ public class ParallaxController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 
         if (lastCameraPosition.x != 0 || lastCameraPosition.y != 0) {
 
@@ -77,7 +77,7 @@ public class ParallaxController : MonoBehaviour {
 
         for (int i=0; i < newBackgrounds.Count; i++) {
             GameObject newLayer = AddBGLayer(newBackgrounds[i]);
-            newLayer.transform.position = new Vector3(gameCamera.transform.position.x, gameCamera.transform.position.y + 1, newLayer.transform.position.z + 5);
+            newLayer.transform.position = new Vector3(gameCamera.transform.position.x, gameCamera.transform.position.y + 1, newLayer.transform.position.z);
         }
     }
 
